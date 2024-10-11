@@ -38,8 +38,38 @@ colnames(keep_c)[2] <- 'common_name'
 name <- merge(keep_s, keep_c)
 name <- name[grepl(' ', name$scientific_name), ]
 saveRDS(name, 'taxonomy_names.rds')
+abbr <- name$scientific_name
+abbr <- strsplit(abbr, '\\s+')
+keep <- lengths(abbr)==2
+name <- name[keep, ]
+abbr <- name$scientific_name
+abbr <- strsplit(abbr, '\\s+')
+abbr <- do.call(rbind, abbr)
+name$abbr <- tolower(paste0(substr(abbr[, 1], 1, 1), abbr[, 2]))
+taxonomy <- name
+mart <- useEnsembl(biomart = 'ensembl')
+ensembl_dataset <- listDatasets(mart = mart)
+use_data(taxonomy, ensembl_dataset, internal = TRUE, overwrite = TRUE, compress = 'xz')
 
 unlink(list.files(pattern='dmp'))
 unlink('gc.prt')
 unlink('readme.txt')
 unlink('taxdump.tar.gz')
+
+library(geneClusterPattern)
+library(org.Dr.eg.db)
+## prepare all the ensembl ids
+ids <- as.list(org.Dr.egENSEMBL)
+ensembl_gene_ids <- sort(unique(unlist(ids)))
+fish_mart <- guessSpecies('zebrafish', output='mart')
+fish <- grangesFromEnsemblIDs(mart = fish_mart,
+                              ensembl_gene_ids = ensembl_gene_ids)
+ensembl_gene_ids <- names(fish[seqnames(fish)=='24'])
+## keep the standard sequence only
+fish <- pruningSequences(fish)
+saveRDS(fish, 'inst/extdata/fish.rds')
+
+species <- guessSpecies(c('human', 'house mouse', 'Japanese medaka', 'turquoise killifish', 'gaculeatus')) # three-spined stickleback
+homologs <- getHomologGeneList(species, fish_mart, ensembl_gene_ids)
+homologs <- pruningSequences(homologs)
+saveRDS(homologs, 'inst/extdata/homologs.rds')

@@ -15,8 +15,7 @@ guessSpecies(
 
 \item{output}{Output type.}
 
-\item{...}{Parameters could be used by \link[biomaRt]{useEnsembl} except
-`biomart`.}
+\item{...}{Parameter will be passed to \link[biomaRt]{useEnsembl}.}
 }
 \value{
 A character or Mart object.
@@ -26,6 +25,8 @@ Guess the species for a given string.
 }
 \examples{
 if(interactive()){
+  guessSpecies('zebrafish')
+  guessSpecies('Japanese medaka')
   guessSpecies('stickleback')
 }
 

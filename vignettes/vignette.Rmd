@@ -1,0 +1,84 @@
+---
+title: "geneClusterPattern Vignette: overview"
+author: "Jianhong Ou"
+date: "`r BiocStyle::doc_date()`"
+package: "`r BiocStyle::pkg_ver('geneClusterPattern')`"
+abstract: >
+  Visualize conserved gene clusters in multiple genomes
+vignette: >
+  %\VignetteIndexEntry{geneClusterPattern Vignette: overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output:
+  html_document:
+    theme: simplex
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+---
+
+```{r, echo=FALSE, results="hide", warning=FALSE}
+suppressPackageStartupMessages({
+    library(org.Dr.eg.db)
+    library(geneClusterPattern)
+    library(GenomeInfoDb)
+    fish <- readRDS(system.file('extdata', 'fish.rds',
+                            package = 'geneClusterPattern'))
+    homologs <- readRDS(system.file('extdata', 'homologs.rds',
+                                package = 'geneClusterPattern'))
+})
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+# Introduction
+
+# Installation
+```{r, eval=FALSE}
+BiocManager::install('jianhong/geneClusterPattern')
+```
+
+# Quick start
+```{r}
+library(geneClusterPattern)
+library(org.Dr.eg.db)
+library(GenomeInfoDb)
+## prepare all the ensembl ids
+ids <- as.list(org.Dr.egENSEMBL)
+ensembl_gene_ids <- sort(unique(unlist(ids)))
+```
+```{r eval=FALSE}
+## extract gene information via biomaRt
+fish_mart <- guessSpecies('zebrafish', output='mart')
+fish <- grangesFromEnsemblIDs(mart = fish_mart,
+                              ensembl_gene_ids = ensembl_gene_ids)
+```
+```{r}
+## subset the ensembl_gene_ids to save time
+ensembl_gene_ids <- names(fish[seqnames(fish)=='24'])
+## keep the standard sequence only
+fish <- pruningSequences(fish)
+## retrieve homologs
+species <- guessSpecies(c('human', 'house mouse', 'Japanese medaka', 'turquoise killifish', 'gaculeatus')) # three-spined stickleback
+species
+```
+```{r eval=FALSE}
+homologs <- getHomologGeneList(species, fish_mart, ensembl_gene_ids)
+homologs <- pruningSequences(homologs)
+```
+```{r}
+## get gene cluster for target gene
+queryGene <- 'pcolce2b'
+nearest10neighbors <- getGeneCluster(fish, queryGene, homologs, k=10)
+
+## plot cluster
+genesList <- c(drerio=fish, homologs)[
+  c("hsapiens", "mmusculus", "drerio", "olatipes", "nfurzeri", "gaculeatus")]
+
+## plot
+pgp <- plotGeneClusterPatterns(genesList, nearest10neighbors)
+```
+
+
+
+

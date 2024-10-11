@@ -10,7 +10,8 @@ plotGeneClusterPatterns(
   additionalID,
   max_gap = 1e+07,
   colors,
-  maxNonEssential = 5
+  maxNonEssential = 5,
+  alignType = c("local", "global")
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ plotGeneClusterPatterns(
 
 \item{maxNonEssential}{The maximal number for non-essential genes between
 two essential genes.}
+
+\item{alignType}{Align the gene pattern by query gene ('local') or by the
+clusters ('global').}
 }
 \value{
 invisible list of plot data.

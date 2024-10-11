@@ -8,6 +8,8 @@
 #' @param colors The colors for genes
 #' @param maxNonEssential The maximal number for non-essential genes between
 #' two essential genes.
+#' @param alignType Align the gene pattern by query gene ('local') or by the
+#' clusters ('global').
 #' @return invisible list of plot data.
 #' @importFrom GenomicRanges GRanges GRangesList
 #' @importFrom grid grid.newpage viewport pushViewport popViewport grid.text
@@ -19,7 +21,9 @@
 #'
 
 plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
-                             colors, maxNonEssential=5){
+                             colors, maxNonEssential=5,
+                             alignType=c('local', 'global')){
+  alignType <- match.arg(alignType)
   if(!missing(additionalID)) ids <- unique(c(ids, additionalID))
   if(missing(colors)){
     colors <- rainbow(length(ids))
@@ -80,7 +84,12 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
   ## make the plot region size comparable
   patternRegions <- rescalRegion(patternRegions)
   ## align center
-  geneClusterPatterns <- alignCenterId(geneClusterPatterns, patternRegions, ids[1])
+  if(alignType == 'local'){
+    geneClusterPatterns <- alignCenterId(geneClusterPatterns, patternRegions, ids[1])
+  }else{
+    geneClusterPatterns <- alignCenterId(geneClusterPatterns, patternRegions)
+  }
+  
   patternRegions <- geneClusterPatterns$regions
   geneClusterPatterns <- geneClusterPatterns$patterns
   h <- 1/length(genesList)

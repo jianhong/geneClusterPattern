@@ -3,15 +3,15 @@
 #' Guess the species for a given string.
 #' @param species A character(1L) to guess.
 #' @param output Output type.
-#' @param ... Parameters could be used by \link[biomaRt]{useEnsembl} except
-#' `biomart`.
+#' @param ... Parameter will be passed to \link[biomaRt]{useEnsembl}.
 #' @return A character or Mart object.
-#' @importFrom methods getPackageName
 #' @importFrom biomaRt useEnsembl listDatasets
 #' @importFrom utils adist
 #' @export
 #' @examples
 #' if(interactive()){
+#'   guessSpecies('zebrafish')
+#'   guessSpecies('Japanese medaka')
 #'   guessSpecies('stickleback')
 #' }
 #'
@@ -20,22 +20,19 @@ guessSpecies <- function(species,
                                   'mart',
                                   'taxid', 'common name'),
                          ...){
-  stopifnot(is.character(species))
-  stopifnot(length(species)==1)
   output <- match.arg(output)
-  mart <- useEnsembl(biomart = 'ensembl', ...)
-  dataset <- listDatasets(mart = mart)
-  taxonomy <- readRDS(system.file('extdata', 'taxonomy_names.rds',
-                                  package = getPackageName()))
-  abbr <- taxonomy$scientific_name
-  abbr <- do.call(rbind, strsplit(abbr, ' '))
-  taxonomy$abbr <- tolower(paste0(substr(abbr[, 1], 1, 1), abbr[, 2]))
-  if(paste0(species, '_gene_ensembl') %in% dataset$dataset){
+  if(length(species)>1){
+    return(unlist(lapply(species, guessSpecies, output=output, ...)))
+  }
+  stopifnot(is.character(species))
+  # load taxonomy from sysdata.rda
+  if(paste0(species, '_gene_ensembl') %in% ensembl_dataset$dataset){
     id <- which(taxonomy$abbr==species & !is.na(taxonomy$abbr))
     return(switch(output,
                   'abbr'=species,
                   'mart'=useEnsembl(biomart = 'ensembl',
-                                    dataset=paste0(species, '_gene_ensembl')),
+                                    dataset=paste0(species, '_gene_ensembl'),
+                                    ...),
                   'scientific name'=taxonomy[id[1], 'scientific_name'],
                   'taxid'=taxonomy[id[1], 'taxid'],
                   'common name'=taxonomy[id[1], 'common_name']))
@@ -51,28 +48,41 @@ guessSpecies <- function(species,
                   !is.na(dist_scientific_name))
   }else if(min_common_name==0){
     id <- which(dist_common_name==min_common_name & !is.na(dist_common_name))
-  }else if(min_scientific_name<min_common_name){
-    id <- which(dist_scientific_name==min_scientific_name &
-                  !is.na(dist_scientific_name))
-    warning('Can not find exactly match. Using ',
-            taxonomy[id[1], 'scientific_name'])
+  }else if(abs(min_scientific_name - min_common_name)<2){
+    id <- which(dist_scientific_name==min_scientific_name |
+                  grepl(species, taxonomy$scientific_name))
+    id1 <- which(dist_common_name==min_common_name  |
+                  grepl(species, taxonomy$common_name))
+    out <- pasteReplaceLast(c(taxonomy[id, 'scientific_name'],
+                              taxonomy[id1, 'common_name']))
+    stop('Can not find exactly match for ', species,
+         '. Do you mean ', out, '?\n')
+  }else if(min_scientific_name < min_common_name){
+    id <- which(dist_scientific_name==min_scientific_name |
+                  grepl(species, taxonomy$scientific_name))
+    out <- pasteReplaceLast(taxonomy[id, 'scientific_name'])
+    stop('Can not find exactly match for ', species,
+         '. Do you mean ', out, '?\n')
   }else{
-    id <- which(dist_common_name==min_common_name & !is.na(dist_common_name))
-    warning('Can not find exactly match. Using ',
-            taxonomy[id[1], 'common_name'])
+    id <- which(dist_common_name==min_common_name  |
+                   grepl(species, taxonomy$common_name))
+    out <- pasteReplaceLast(taxonomy[id, 'common_name'])
+    stop('Can not find exactly match for ', species,
+         '. Do you mean ', out, '?\n')
   }
   sname0 <- taxonomy[id[1], 'scientific_name']
   sname <- strsplit(sname0, ' ')[[1]]
   guess <- tolower(paste0(substr(sname[1], 1, 1), sname[2]))
-  if(paste0(guess, '_gene_ensembl') %in% dataset$dataset){
+  if(paste0(guess, '_gene_ensembl') %in% ensembl_dataset$dataset){
     return(switch(output,
                   'abbr'=guess,
                   'mart'=useEnsembl(biomart = 'ensembl',
-                                    dataset=paste0(guess, '_gene_ensembl')),
+                                    dataset=paste0(guess, '_gene_ensembl'),
+                                    ...),
                   'scientific name'=sname0,
                   'taxid'=taxonomy[id[1], 'taxid'],
                   'common name'=taxonomy[id[1], 'common_name']))
   }else{
-    warning('The dataset is not available for ', sname)
+    stop('The dataset is not available for ', sname0)
   }
 }
