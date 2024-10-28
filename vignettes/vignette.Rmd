@@ -80,5 +80,8 @@ pgp <- plotGeneClusterPatterns(genesList, nearest10neighbors)
 ```
 
 
+```{r}
+gps <- genePatternScore(genesList, nearest10neighbors)
+```
 
 

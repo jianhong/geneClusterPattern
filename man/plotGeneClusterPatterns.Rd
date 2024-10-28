@@ -35,7 +35,7 @@ clusters ('global').}
 invisible list of plot data.
 }
 \description{
-A short description...
+Plot the gene patters for given ids.
 }
 \examples{
 # example code

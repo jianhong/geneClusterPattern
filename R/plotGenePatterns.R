@@ -1,6 +1,6 @@
 #' plot gene patters for given ids
 #' @description
-#' A short description...
+#' Plot the gene patters for given ids.
 #' @param genesList A list of GRanges.
 #' @param ids IDs to be plotted. See \link{getGeneCluster}.
 #' @param additionalID Other IDs should be included.
@@ -32,24 +32,8 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
     stopifnot('Not all ids are in names of colors'=
                 all(ids %in% names(colors)))
   }
-  stopifnot('genesList must have names'=
-              length(names(genesList))==length(genesList))
-  null <- lapply(genesList, function(.ele){
-    if(!is(.ele, 'GRanges')){
-      stop('genesList must be a list of GRanges', call. = FALSE)
-    }
-    if(length(.ele$gene_name)!=length(.ele)){
-      stop('Elements in genesList must have metadata "gene_name"',
-           call. = FALSE)
-    }
-    if(length(names(.ele))!=length(.ele)){
-      stop('Elements in genesList must have names',
-           call. = FALSE)
-    }
-  })
-
-  geneModels <- lapply(genesList, getGeneModel,
-                       ids=ids, max_gap=max_gap)
+  
+  geneModels <- checkAndGetGeneModels(genesList, ids=ids, max_gap=max_gap)
   ## extract the plot regions for each species
   region <- unlist(GRangesList(lapply(geneModels, function(.ele) .ele$region)))
   ## make the plot region size comparable
