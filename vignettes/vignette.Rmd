@@ -49,7 +49,7 @@ ensembl_gene_ids <- sort(unique(unlist(ids)))
 ```
 ```{r eval=FALSE}
 ## extract gene information via biomaRt
-fish_mart <- guessSpecies('zebrafish', output='mart')
+fish_mart <- guessSpecies('zebrafish', output='mart', version=112)
 fish <- grangesFromEnsemblIDs(mart = fish_mart,
                               ensembl_gene_ids = ensembl_gene_ids)
 ```
@@ -59,7 +59,7 @@ ensembl_gene_ids <- names(fish[seqnames(fish)=='24'])
 ## keep the standard sequence only
 fish <- pruningSequences(fish)
 ## retrieve homologs
-species <- guessSpecies(c('human', 'house mouse', 'Japanese medaka', 'turquoise killifish', 'gaculeatus')) # three-spined stickleback
+species <- guessSpecies(c('human', 'house mouse', 'Japanese medaka', 'turquoise killifish', 'gaculeatus'), version=112) # three-spined stickleback
 species
 ```
 ```{r eval=FALSE}
@@ -81,7 +81,7 @@ pgp <- plotGeneClusterPatterns(genesList, nearest10neighbors)
 
 
 ```{r}
-gps <- genePatternScore(genesList, nearest10neighbors)
+gps <- geneOrderScore(genesList, ref='drerio', nearest10neighbors)
 ```
 
 

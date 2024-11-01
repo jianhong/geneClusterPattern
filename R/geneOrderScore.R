@@ -1,11 +1,12 @@
-#' Calculate the gene pattern score
+#' Calculate the gene order score
 #' @description
-#' The gene pattern score is the normalized standard divination of 
+#' The gene order score is the mean of 
 #' edit (Levenshtein) distance of given ids from different species.
-#' The maximal gene pattern score is 100.
-#' Gene pattern score = 100 / ((sd(adist)+1)*k/length(ids))
+#' Gene order score = mean(adist)*k/length(ids).
+#' The higher the gene order score, the lower the conservation of the gene order
 #' @param genesList A list of GRanges.
 #' @param ids IDs to be plotted. See \link{getGeneCluster}.
+#' @param ref The reference species.
 #' @param k The maximum number of nearest genes used in \link{getGeneCluster}.
 #' @param max_gap The maximal gaps from the first ID in `ids`.
 #' @param output Output values
@@ -15,11 +16,14 @@
 #' @examples
 #' # example code
 #' 
-genePatternScore <- function(genesList, ids, k=length(ids), max_gap=1e7,
-                             output=c("score", "sd", "distance")){
+geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
+                             output=c("score", "distance")){
   output <- match.arg(output)
   stopifnot(is.numeric(k))
   stopifnot(length(k)==1)
+  if(!missing(ref)){
+    stopifnot(ref %in% names(genesList))
+  }
   fac <- k/length(ids)
   geneIdMap <- c(seq(65, 90),# A-Z
                  seq(97, 122), # a-z
@@ -35,7 +39,7 @@ genePatternScore <- function(genesList, ids, k=length(ids), max_gap=1e7,
     stop('Too much ids. Maximal ', length(geneIdMap), ' ids are supported!')
   }
   
-  # get the strings of gene pattern for each species
+  # get the strings of gene order for each species
   geneModels <- checkAndGetGeneModels(genesList, ids=ids, max_gap=max_gap)
   geneIds <- lapply(geneModels, function(.ele) names(.ele$geneModel))
   
@@ -52,15 +56,20 @@ genePatternScore <- function(genesList, ids, k=length(ids), max_gap=1e7,
             paste(ch, collapse=''))) # remove ~ from start and end
   })
   
-  dist <- adist(maskedGeneIds$drerio, maskedGeneIds)
+  if(missing(ref)){
+    dist <- adist(maskedGeneIds)
+  }else{
+    dist <- adist(maskedGeneIds[[ref]], maskedGeneIds)
+    dist <- dist[, colnames(dist)!=ref, drop=TRUE]
+  }
   if(output=='distance'){
     return(dist)
   }
-  sd <- sd(dist)
-  if(output=='sd'){
-    return(sd)
+  if(missing(ref)){
+    gps <- mean(dist[lower.tri(dist, diag = FALSE)], na.rm=TRUE)*fac
+  }else{
+    gps <- mean(dist, na.rm=TRUE)*fac
   }
-  gps <- 100/((sd+1)*fac)
   return(gps)
 }
 
