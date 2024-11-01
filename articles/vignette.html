@@ -81,7 +81,7 @@
                         <h4 data-toc-skip class="author">Jianhong
 Ou</h4>
             
-            <h4 data-toc-skip class="date">28 October 2024</h4>
+            <h4 data-toc-skip class="date">1 November 2024</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jianhong/geneClusterPattern/blob/main/vignettes/vignette.Rmd" class="external-link"><code>vignettes/vignette.Rmd</code></a></small>
       <div class="hidden name"><code>vignette.Rmd</code></div>
@@ -116,7 +116,7 @@ Ou</h4>
 <span><span class="va">ensembl_gene_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## extract gene information via biomaRt</span></span>
-<span><span class="va">fish_mart</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/guessSpecies.html">guessSpecies</a></span><span class="op">(</span><span class="st">'zebrafish'</span>, output<span class="op">=</span><span class="st">'mart'</span><span class="op">)</span></span>
+<span><span class="va">fish_mart</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/guessSpecies.html">guessSpecies</a></span><span class="op">(</span><span class="st">'zebrafish'</span>, output<span class="op">=</span><span class="st">'mart'</span>, version<span class="op">=</span><span class="fl">112</span><span class="op">)</span></span>
 <span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/grangesFromEnsemblIDs.html">grangesFromEnsemblIDs</a></span><span class="op">(</span>mart <span class="op">=</span> <span class="va">fish_mart</span>,</span>
 <span>                              ensembl_gene_ids <span class="op">=</span> <span class="va">ensembl_gene_ids</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -125,7 +125,7 @@ Ou</h4>
 <span><span class="co">## keep the standard sequence only</span></span>
 <span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pruningSequences.html">pruningSequences</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
 <span><span class="co">## retrieve homologs</span></span>
-<span><span class="va">species</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/guessSpecies.html">guessSpecies</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'human'</span>, <span class="st">'house mouse'</span>, <span class="st">'Japanese medaka'</span>, <span class="st">'turquoise killifish'</span>, <span class="st">'gaculeatus'</span><span class="op">)</span><span class="op">)</span> <span class="co"># three-spined stickleback</span></span>
+<span><span class="va">species</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/guessSpecies.html">guessSpecies</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'human'</span>, <span class="st">'house mouse'</span>, <span class="st">'Japanese medaka'</span>, <span class="st">'turquoise killifish'</span>, <span class="st">'gaculeatus'</span><span class="op">)</span>, version<span class="op">=</span><span class="fl">112</span><span class="op">)</span> <span class="co"># three-spined stickleback</span></span>
 <span><span class="va">species</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "hsapiens"   "mmusculus"  "olatipes"   "nfurzeri"   "gaculeatus"</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -144,7 +144,7 @@ Ou</h4>
 <span><span class="va">pgp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotGeneClusterPatterns.html">plotGeneClusterPatterns</a></span><span class="op">(</span><span class="va">genesList</span>, <span class="va">nearest10neighbors</span><span class="op">)</span></span></code></pre></div>
 <p><img src="vignette_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/genePatternScore.html">genePatternScore</a></span><span class="op">(</span><span class="va">genesList</span>, <span class="va">nearest10neighbors</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">gps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/geneOrderScore.html">geneOrderScore</a></span><span class="op">(</span><span class="va">genesList</span>, ref<span class="op">=</span><span class="st">'drerio'</span>, <span class="va">nearest10neighbors</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
