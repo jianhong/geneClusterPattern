@@ -84,6 +84,10 @@ reverseByCor <- function(stringList){
   b <- lapply(stringList, function(.ele){
     match(a, .ele)
   })
+  b <- lapply(b, function(.ele){
+    .ele[is.na(.ele)] <- 0
+    .ele
+  })
   cor <- lapply(seq_along(b)[-1], function(.ele)
     tryCatch(cor(b[[1]], b[[.ele]], method = 'spearman'),
              error=function(.e){
