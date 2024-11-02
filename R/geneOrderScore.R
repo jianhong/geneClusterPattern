@@ -48,13 +48,18 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   names(geneIdMap) <- ids
   
   ## mask the non-essential IDs
-  maskedGeneIds <- lapply(geneIds, function(.ele){
-    ch <- geneIdMap[.ele]
+  stringList <- lapply(geneIds, function(.ele) geneIdMap[.ele])
+  
+  ## rever string if reversed
+  stringList <- reverseByCor(stringList)
+  
+  maskedGeneIds <- lapply(stringList, function(ch){
     ch[is.na(ch)] <- '~' # 126
     sub('^~+', '',
         sub('~+$', '',
             paste(ch, collapse=''))) # remove ~ from start and end
   })
+  
   
   if(missing(ref)){
     dist <- adist(maskedGeneIds)
@@ -73,3 +78,24 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   return(gps)
 }
 
+reverseByCor <- function(stringList){
+  a <- unique(unlist(stringList))
+  a <- a[!is.na(a)]
+  b <- lapply(stringList, function(.ele){
+    match(a, .ele)
+  })
+  cor <- lapply(seq_along(b)[-1], function(.ele)
+    tryCatch(cor(b[[1]], b[[.ele]], method = 'spearman'),
+             error=function(.e){
+               0
+             }))
+  if(sum(cor<0)>=length(cor)/2){
+    ## reverse the strings with negative cor
+    k <- which(cor<0)+1
+  }else{
+    ## reverse the strings with positive cor
+    k <- c(1, which(cor>0)+1)
+  }
+  stringList[k] <- lapply(stringList[k], rev)
+  return(stringList)
+}
