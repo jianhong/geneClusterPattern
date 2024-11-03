@@ -93,6 +93,7 @@ reverseByCor <- function(stringList){
              error=function(.e){
                0
              }))
+  cor[is.na(cor)] <- 0
   if(sum(cor<0)>=length(cor)/2){
     ## reverse the strings with negative cor
     k <- which(cor<0)+1
