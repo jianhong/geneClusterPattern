@@ -139,6 +139,7 @@ global_alignment_score <- function(stringList, maskedGeneIds, ref){
     dist <- lapply(maskedGeneIds[names(maskedGeneIds)!=ref], function(s2){
       pairwiseAlignment(maskedGeneIds[[ref]], s2, scoreOnly = TRUE, type='global')
     })
+    dist <- unlist(dist)
   }
   return(dist)
 }
@@ -168,8 +169,8 @@ spearman_correlation <- function(stringList, maskedGeneIds, ref){
                error=function(.e){
                  0
                }))
+    cor <- unlist(cor)
   }
-  cor <- unlist(cor)
   cor[is.na(cor)] <- 0
   return(cor)
 }
