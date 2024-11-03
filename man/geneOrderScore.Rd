@@ -10,7 +10,8 @@ geneOrderScore(
   ref,
   k = length(ids),
   max_gap = 1e+07,
-  output = c("score", "distance")
+  method = c("edit distance", "global alignment score", "spearman correlation"),
+  output = c("score", "value matrix")
 )
 }
 \arguments{
@@ -24,16 +25,24 @@ geneOrderScore(
 
 \item{max_gap}{The maximal gaps from the first ID in `ids`.}
 
+\item{method}{The method to calculate the gene order score.
+'edit distance', the gene order score is the mean of 
+edit (Levenshtein) distance of given ids from different species.
+Gene order score = mean(adist)*k/length(ids).
+The higher the gene order score, the lower the conservation of the gene order.
+'global alignment score', the gene order score is the mean of global 
+alignment score. see \link[pwalign]{pairwiseAlignment}.
+The higher the gene order score, the higher the conservation of the gene order.
+'spearman correlation', the score is the mean of Spearman correlation of
+the genes appearance order.}
+
 \item{output}{Output values}
 }
 \value{
-the standard deviation or edit distance values.
+the score or values matrix such as adist, or alignment scores.
 }
 \description{
-The gene order score is the mean of 
-edit (Levenshtein) distance of given ids from different species.
-Gene order score = mean(adist)*k/length(ids).
-The higher the gene order score, the lower the conservation of the gene order
+Calculate the gene order score.
 }
 \examples{
 # example code
