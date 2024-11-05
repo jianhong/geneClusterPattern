@@ -69,7 +69,8 @@
 <span>  <span class="va">ref</span>,</span>
 <span>  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids</span><span class="op">)</span>,</span>
 <span>  max_gap <span class="op">=</span> <span class="fl">1e+07</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"edit distance"</span>, <span class="st">"global alignment score"</span>, <span class="st">"spearman correlation"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"edit distance"</span>, <span class="st">"global alignment score"</span>, <span class="st">"spearman correlation"</span>,</span>
+<span>    <span class="st">"non-random score"</span><span class="op">)</span>,</span>
 <span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"score"</span>, <span class="st">"value matrix"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -107,8 +108,11 @@ The higher the gene order score, the lower the conservation of the gene order.
 'global alignment score', the gene order score is the mean of global
 alignment score. see pairwiseAlignment.
 The higher the gene order score, the higher the conservation of the gene order.
-'spearman correlation', the score is the mean of Spearman correlation of
-the genes appearance order.</p></dd>
+'spearman correlation', the score is the mean of absolute value of
+Spearman correlation of the genes appearance order.
+'non-random score', the score is the mean of Jaccard index of 2-order and
+3-order of ids for paired samples.
+The higher the gene order score, the higher the conservation of the gene order.</p></dd>
 
 
 <dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
@@ -123,7 +127,18 @@ the genes appearance order.</p></dd>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># example code</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'fish.rds'</span>,</span></span>
+<span class="r-in"><span>package <span class="op">=</span> <span class="st">'geneClusterPattern'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">homologs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'homologs.rds'</span>,</span></span>
+<span class="r-in"><span>                                package <span class="op">=</span> <span class="st">'geneClusterPattern'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">queryGene</span> <span class="op">&lt;-</span> <span class="st">'pcolce2b'</span></span></span>
+<span class="r-in"><span><span class="va">nearest10neighbors</span> <span class="op">&lt;-</span> <span class="fu"><a href="getGeneCluster.html">getGeneCluster</a></span><span class="op">(</span><span class="va">fish</span>, <span class="va">queryGene</span>, <span class="va">homologs</span>, k<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">genesList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>drerio<span class="op">=</span><span class="va">fish</span>, <span class="va">homologs</span><span class="op">)</span><span class="op">[</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hsapiens"</span>, <span class="st">"mmusculus"</span>, <span class="st">"drerio"</span>, <span class="st">"olatipes"</span>, <span class="st">"nfurzeri"</span>, <span class="st">"gaculeatus"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">geneOrderScore</span><span class="op">(</span><span class="va">genesList</span>, <span class="va">nearest10neighbors</span>, ref<span class="op">=</span><span class="st">'drerio'</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 47.2</span>
+<span class="r-in"><span><span class="fu">geneOrderScore</span><span class="op">(</span><span class="va">genesList</span>, <span class="va">nearest10neighbors</span>, method<span class="op">=</span><span class="st">'non-random score'</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4345176</span>
 </code></pre></div>
     </div>
   </div>

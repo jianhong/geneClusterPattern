@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   vignette: vignette.html
-last_built: 2024-11-03T18:02Z
+last_built: 2024-11-05T17:02Z
 urls:
   reference: https://jianhong.github.io/geneClusterPattern/reference
   article: https://jianhong.github.io/geneClusterPattern/articles
