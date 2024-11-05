@@ -11,7 +11,7 @@ geneOrderScore(
   k = length(ids),
   max_gap = 1e+07,
   method = c("edit distance", "global alignment score", "spearman correlation",
-    "non-random score"),
+    "non-random score", "pairs distance"),
   output = c("score", "value matrix")
 )
 }
@@ -38,7 +38,9 @@ The higher the gene order score, the higher the conservation of the gene order.
 Spearman correlation of the genes appearance order.
 'non-random score', the score is the mean of Jaccard index of 2-order and
 3-order of ids for paired samples.
-The higher the gene order score, the higher the conservation of the gene order.}
+The higher the gene order score, the higher the conservation of the gene order.
+'pairs distance', the score is the mean of pairwise coordinates distance.
+The higher the gene order score, the lower the conservation of gene order.}
 
 \item{output}{Output values}
 }

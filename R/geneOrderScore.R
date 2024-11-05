@@ -19,6 +19,8 @@
 #' 'non-random score', the score is the mean of Jaccard index of 2-order and
 #' 3-order of ids for paired samples.
 #' The higher the gene order score, the higher the conservation of the gene order.
+#' 'pairs distance', the score is the mean of pairwise coordinates distance.
+#' The higher the gene order score, the lower the conservation of gene order.
 #' @param output Output values
 #' @return the score or values matrix such as adist, or alignment scores.
 #' @importFrom stats sd
@@ -41,7 +43,8 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
                            method = c('edit distance',
                                       'global alignment score',
                                       'spearman correlation',
-                                      'non-random score'),
+                                      'non-random score',
+                                      'pairs distance'),
                            output=c("score", "value matrix")){
   output <- match.arg(output)
   method <- match.arg(method)
@@ -79,6 +82,7 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   geneModels <- checkAndGetGeneModels(genesList, ids=ids, max_gap=max_gap)
   geneIds <- lapply(geneModels, function(.ele) names(.ele$geneModel))
   #strand <- lapply(geneModels, function(.ele) strand(.ele$geneModel))
+  grs <- lapply(geneModels, function(.ele) .ele$geneModel)
 
   ## mask the non-essential IDs
   stringList <- lapply(geneIds, function(.ele) geneIdMap[.ele])
@@ -97,7 +101,7 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   })
   
   FUN <- get(gsub(' |-', '_', method))
-  dist <- FUN(stringList, maskedGeneIds, ref)
+  dist <- FUN(stringList, maskedGeneIds, ref, grs)
   
   if(output!='score'){
     return(dist)
@@ -128,7 +132,7 @@ reverseByCor <- function(stringList, ref){
   return(stringList)
 }
 
-edit_distance <- function(stringList, maskedGeneIds, ref){
+edit_distance <- function(stringList, maskedGeneIds, ref, grs){
   if(missing(ref)){
     dist <- adist(maskedGeneIds, ignore.case = FALSE, partial = FALSE)
   }else{
@@ -143,7 +147,7 @@ getComb <- function(x){
   expand.grid(x, x)
 }
 
-global_alignment_score <- function(stringList, maskedGeneIds, ref){
+global_alignment_score <- function(stringList, maskedGeneIds, ref, grs){
   if(missing(ref)){
     comb <- getComb(names(maskedGeneIds))
     dist <- apply(comb, 1, function(.ele){
@@ -161,7 +165,7 @@ global_alignment_score <- function(stringList, maskedGeneIds, ref){
   }
   return(dist)
 }
-spearman_correlation <- function(stringList, maskedGeneIds, ref){
+spearman_correlation <- function(stringList, maskedGeneIds, ref, grs){
   a <- unique(unlist(stringList))
   a <- a[!is.na(a)]
   b <- lapply(stringList, function(.ele){
@@ -199,7 +203,7 @@ jaccard <- function(a, b) {
   return (intersection/union)
 }
 
-non_random_score <- function(stringList, maskedGeneIds, ref){
+non_random_score <- function(stringList, maskedGeneIds, ref, grs){
   ## gene random distributed, 
   ## 2 order Markov chain, or 3 order Markov chain
   # get all pairs in a and b
@@ -237,6 +241,33 @@ non_random_score <- function(stringList, maskedGeneIds, ref){
   return(ji)
 }
 
-kolmogorov_complexity <- function(stringList, maskedGeneIds, ref){
+pairs_distance <- function(stringList, maskedGeneIds, ref, grs){
+  a <- unique(unlist(lapply(stringList, names)))
+  a <- a[!is.na(a)]
+  pairs <- getComb(a)
+  b <- lapply(grs, function(.ele){
+    distance(.ele[pairs[, 1]], .ele[pairs[, 2]])
+  })
+  b <- do.call(cbind, b)
+  rownames(b) <- paste(pairs[, 1], pairs[, 2], sep=' ')
+  b[is.na(b)] <- 0
+  ## pairwise difference
+  if(missing(ref)){
+    comb <- getComb(colnames(b))
+    d <- apply(comb, 1, function(.ele){
+      sum(abs(b[, .ele[1]] - b[, .ele[2]]))/nrow(b)
+    })
+    d <- matrix(d, nrow = ncol(b),
+                dimnames = list(colnames(b), colnames(b)))
+  }else{
+    d <- lapply(colnames(b), function(.ele){
+      sum(abs(b[, .ele] - b[, ref]))/nrow(b)
+    })
+    d <- unlist(d)
+  }
+  return(d)
+}
+
+kolmogorov_complexity <- function(stringList, maskedGeneIds, ref, grs){
   
 }
