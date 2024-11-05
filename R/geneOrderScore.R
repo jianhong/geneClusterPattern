@@ -104,7 +104,7 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   }
   
   if(method=='spearman correlation'){## convert to positive number
-    gps <- abs(gps)
+    dist <- abs(dist)
   }
   
   if(is.matrix(dist)){
