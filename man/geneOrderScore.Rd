@@ -10,7 +10,8 @@ geneOrderScore(
   ref,
   k = length(ids),
   max_gap = 1e+07,
-  method = c("edit distance", "global alignment score", "spearman correlation"),
+  method = c("edit distance", "global alignment score", "spearman correlation",
+    "non-random score"),
   output = c("score", "value matrix")
 )
 }
@@ -33,8 +34,11 @@ The higher the gene order score, the lower the conservation of the gene order.
 'global alignment score', the gene order score is the mean of global 
 alignment score. see \link[pwalign]{pairwiseAlignment}.
 The higher the gene order score, the higher the conservation of the gene order.
-'spearman correlation', the score is the mean of Spearman correlation of
-the genes appearance order.}
+'spearman correlation', the score is the mean of absolute value of
+Spearman correlation of the genes appearance order.
+'non-random score', the score is the mean of Jaccard index of 2-order and
+3-order of ids for paired samples.
+The higher the gene order score, the higher the conservation of the gene order.}
 
 \item{output}{Output values}
 }
@@ -46,5 +50,14 @@ Calculate the gene order score.
 }
 \examples{
 # example code
-
+fish <- readRDS(system.file('extdata', 'fish.rds',
+package = 'geneClusterPattern'))
+homologs <- readRDS(system.file('extdata', 'homologs.rds',
+                                package = 'geneClusterPattern'))
+queryGene <- 'pcolce2b'
+nearest10neighbors <- getGeneCluster(fish, queryGene, homologs, k=10)
+genesList <- c(drerio=fish, homologs)[
+c("hsapiens", "mmusculus", "drerio", "olatipes", "nfurzeri", "gaculeatus")]
+geneOrderScore(genesList, nearest10neighbors, ref='drerio')
+geneOrderScore(genesList, nearest10neighbors, method='non-random score')
 }

@@ -14,8 +14,11 @@
 #' 'global alignment score', the gene order score is the mean of global 
 #' alignment score. see \link[pwalign]{pairwiseAlignment}.
 #' The higher the gene order score, the higher the conservation of the gene order.
-#' 'spearman correlation', the score is the mean of Spearman correlation of
-#' the genes appearance order.
+#' 'spearman correlation', the score is the mean of absolute value of
+#' Spearman correlation of the genes appearance order.
+#' 'non-random score', the score is the mean of Jaccard index of 2-order and
+#' 3-order of ids for paired samples.
+#' The higher the gene order score, the higher the conservation of the gene order.
 #' @param output Output values
 #' @return the score or values matrix such as adist, or alignment scores.
 #' @importFrom stats sd
@@ -24,11 +27,21 @@
 #' @export
 #' @examples
 #' # example code
-#' 
+#' fish <- readRDS(system.file('extdata', 'fish.rds',
+#' package = 'geneClusterPattern'))
+#' homologs <- readRDS(system.file('extdata', 'homologs.rds',
+#'                                 package = 'geneClusterPattern'))
+#' queryGene <- 'pcolce2b'
+#' nearest10neighbors <- getGeneCluster(fish, queryGene, homologs, k=10)
+#' genesList <- c(drerio=fish, homologs)[
+#' c("hsapiens", "mmusculus", "drerio", "olatipes", "nfurzeri", "gaculeatus")]
+#' geneOrderScore(genesList, nearest10neighbors, ref='drerio')
+#' geneOrderScore(genesList, nearest10neighbors, method='non-random score')
 geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
                            method = c('edit distance',
                                       'global alignment score',
-                                      'spearman correlation'),
+                                      'spearman correlation',
+                                      'non-random score'),
                            output=c("score", "value matrix")){
   output <- match.arg(output)
   method <- match.arg(method)
@@ -58,15 +71,15 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   if(length(ids)>length(geneIdMap)){
     stop('Too much ids. Maximal ', length(geneIdMap), ' ids are supported!')
   }
-  
-  # get the strings of gene order for each species
-  geneModels <- checkAndGetGeneModels(genesList, ids=ids, max_gap=max_gap)
-  geneIds <- lapply(geneModels, function(.ele) names(.ele$geneModel))
-  
   # id map
   geneIdMap <- geneIdMap[seq_along(ids)]
   names(geneIdMap) <- ids
   
+  # get the strings of gene order for each species
+  geneModels <- checkAndGetGeneModels(genesList, ids=ids, max_gap=max_gap)
+  geneIds <- lapply(geneModels, function(.ele) names(.ele$geneModel))
+  #strand <- lapply(geneModels, function(.ele) strand(.ele$geneModel))
+
   ## mask the non-essential IDs
   stringList <- lapply(geneIds, function(.ele) geneIdMap[.ele])
   
@@ -80,15 +93,20 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
     ch[is.na(ch)] <- gapLetter # 45
     sub(paste0('^', gapLetter, '+'), '',
         sub(paste0(gapLetter, '+$'), '',
-            paste(ch, collapse=''))) # remove ~ from start and end
+            paste(ch, collapse=''))) # remove gapLetter from start and end
   })
   
-  FUN <- get(gsub(' ', '_', method))
+  FUN <- get(gsub(' |-', '_', method))
   dist <- FUN(stringList, maskedGeneIds, ref)
   
   if(output!='score'){
     return(dist)
   }
+  
+  if(method=='spearman correlation'){## convert to positive number
+    gps <- abs(gps)
+  }
+  
   if(is.matrix(dist)){
     gps <- mean(dist[lower.tri(dist, diag = FALSE)], na.rm=TRUE)*fac
   }else{
@@ -173,4 +191,52 @@ spearman_correlation <- function(stringList, maskedGeneIds, ref){
   }
   cor[is.na(cor)] <- 0
   return(cor)
+}
+
+jaccard <- function(a, b) {
+  intersection = length(intersect(a, b))
+  union = length(a) + length(b) - intersection
+  return (intersection/union)
+}
+
+non_random_score <- function(stringList, maskedGeneIds, ref){
+  ## gene random distributed, 
+  ## 2 order Markov chain, or 3 order Markov chain
+  # get all pairs in a and b
+  # check the shared pairs
+  # index = shared pairs / all pairs
+  # like Jaccard index
+  b <- lapply(maskedGeneIds, function(.ele){
+    .ele <- gsub('--+', '--', .ele) # gapLetter <- '-' # 45
+    n <- seq.int(nchar(.ele))
+    s <- c(strsplit(.ele, '')[[1]],
+           substring(.ele, first =n[-length(n)], last=n[-1]))
+    if(length(n)>2){
+      s <- c(s, substring(.ele,
+                          first =n[-c(length(n)-1, length(n))],
+                          last=n[-c(1, 2)]))
+    }
+    s <- strsplit(s, '')
+    s <- lapply(s, function(.e){
+      paste(sort(unique(.e[.e!='-'])), collapse = '')
+    })
+    s <- unlist(unique(s))
+    s[s!='']
+  })
+  if(missing(ref)){
+    comb <- getComb(names(b))
+    ji <- apply(comb, 1, function(.ele) 
+      jaccard(b[[.ele[1]]], b[[.ele[2]]]))
+    ji <- matrix(ji, nrow = length(b),
+                  dimnames = list(names(b), names(b)))
+  }else{
+    ji <- lapply(seq_along(b), function(.ele)
+      jaccard(b[[ref]], b[[.ele]]))
+    ji <- unlist(ji)
+  }
+  return(ji)
+}
+
+kolmogorov_complexity <- function(stringList, maskedGeneIds, ref){
+  
 }

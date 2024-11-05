@@ -4,7 +4,8 @@
 #' @param k The maximal non-essential genes to be plotted between two
 #'  essential genes.
 #' @return gene patter in GRanges object
-#' @importFrom IRanges gaps promoters ranges<-
+#' @importFrom IRanges gaps promoters ranges<- disjoin reduce
+#' @importFrom GenomicRanges GRangesList
 #' @importFrom BiocGenerics start end width strand strand<-
 getGeneClusterPattern <- function(gr, reg, k=5){
   if(length(gr)){
@@ -38,13 +39,23 @@ getGeneClusterPattern <- function(gr, reg, k=5){
     grgap$must_have_label <- !grgap$hide_label
     grs <- c(gr, grgap)
     grs <- grs[order(start(promoters(grs, upstream=0, downstream=1)))]
-    wid <- ifelse(!grs$must_have_label,
-                  ceiling(log10(width(grs))),# log10 re-scale for non-essential
-                  ceiling(log2(width(grs)))) # log2 re-scale for essential
+    grs_dj <- disjoin(grs, with.revmap=TRUE, ignore.strand=TRUE)
+    grs_dj$must_have_label <- vapply(grs_dj$revmap, function(.ele){
+      any(grs[.ele]$must_have_label)
+    }, FUN.VALUE = logical(1L))
+    wid <- ifelse(!grs_dj$must_have_label,
+                  ceiling(log10(width(grs_dj))),# log10 re-scale for non-essential
+                  ceiling(log2(width(grs_dj)))) # log2 re-scale for essential
     pos <- cumsum(c(4, wid))
-    ranges(grs) <- IRanges(start = pos[seq_along(grs)],
-                           end = pos[-1],
-                           names = names(grs))
+    ranges(grs_dj) <- IRanges(start = pos[seq_along(grs_dj)],
+                              end = pos[-1])
+    ## split the disjoined granges by the reverse map
+    grs_dj <- split(rep(grs_dj, lengths(grs_dj$revmap)), unlist(grs_dj$revmap))
+    grs_dj <- GRangesList(grs_dj)
+    grs_dj <- reduce(grs_dj)
+    grs_dj <- unlist(grs_dj)
+    names(grs_dj) <- names(grs)
+    ranges(grs) <- ranges(grs_dj)
     ## get strand information back
     keep <- names(gr) %in% names(grs)
     gr <- gr[keep]
