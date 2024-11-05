@@ -213,8 +213,11 @@ non_random_score <- function(stringList, maskedGeneIds, ref, grs){
   b <- lapply(maskedGeneIds, function(.ele){
     .ele <- gsub('--+', '--', .ele) # gapLetter <- '-' # 45
     n <- seq.int(nchar(.ele))
-    s <- c(strsplit(.ele, '')[[1]],
-           substring(.ele, first =n[-length(n)], last=n[-1]))
+    s <- strsplit(.ele, '')[[1]]
+    if(length(n)>1){
+      s <- c(s,
+             substring(.ele, first =n[-length(n)], last=n[-1]))
+    }
     if(length(n)>2){
       s <- c(s, substring(.ele,
                           first =n[-c(length(n)-1, length(n))],
