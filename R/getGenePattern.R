@@ -4,7 +4,7 @@
 #' @param k The maximal non-essential genes to be plotted between two
 #'  essential genes.
 #' @return gene patter in GRanges object
-#' @importFrom IRanges gaps promoters ranges<- disjoin reduce
+#' @importFrom IRanges gaps promoters ranges<- disjoin reduce ranges
 #' @importFrom GenomicRanges GRangesList
 #' @importFrom BiocGenerics start end width strand strand<-
 getGeneClusterPattern <- function(gr, reg, k=5){
