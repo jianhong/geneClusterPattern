@@ -21,6 +21,9 @@
 #' The higher the gene order score, the higher the conservation of the gene order.
 #' 'pairs distance', the score is the mean of pairwise coordinates distance.
 #' The higher the gene order score, the lower the conservation of gene order.
+#' 'pairs direction', the socre is the mean of alignment of
+#' pairwise strand information.
+#' The higher the gene order score, the higher the conservation of gene order.
 #' @param output Output values
 #' @return the score or values matrix such as adist, or alignment scores.
 #' @importFrom stats sd
@@ -33,18 +36,24 @@
 #' package = 'geneClusterPattern'))
 #' homologs <- readRDS(system.file('extdata', 'homologs.rds',
 #'                                 package = 'geneClusterPattern'))
-#' queryGene <- 'pcolce2b'
+#' queryGene <- 'inhbaa'
 #' nearest10neighbors <- getGeneCluster(fish, queryGene, homologs, k=10)
 #' genesList <- c(drerio=fish, homologs)[
 #' c("hsapiens", "mmusculus", "drerio", "olatipes", "nfurzeri", "gaculeatus")]
 #' geneOrderScore(genesList, nearest10neighbors, ref='drerio')
+#' geneOrderScore(genesList, nearest10neighbors, method='edit distance')
+#' geneOrderScore(genesList, nearest10neighbors, method='global alignment score')
+#' geneOrderScore(genesList, nearest10neighbors, method='spearman correlation')
 #' geneOrderScore(genesList, nearest10neighbors, method='non-random score')
+#' geneOrderScore(genesList, nearest10neighbors, method='pairs distance')
+#' geneOrderScore(genesList, nearest10neighbors, method='pairs direction')
 geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
                            method = c('edit distance',
                                       'global alignment score',
                                       'spearman correlation',
                                       'non-random score',
-                                      'pairs distance'),
+                                      'pairs distance',
+                                      'pairs direction'),
                            output=c("score", "value matrix")){
   output <- match.arg(output)
   method <- match.arg(method)
@@ -244,15 +253,21 @@ non_random_score <- function(stringList, maskedGeneIds, ref, grs){
   return(ji)
 }
 
+#' @importFrom utils combn
+#' @importFrom IRanges distance
 pairs_distance <- function(stringList, maskedGeneIds, ref, grs){
   a <- unique(unlist(lapply(stringList, names)))
   a <- a[!is.na(a)]
-  pairs <- getComb(a)
+  pairs <- combn(a, 2)
   b <- lapply(grs, function(.ele){
-    distance(.ele[pairs[, 1]], .ele[pairs[, 2]])
+    .ele <- suppressWarnings(
+      c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele))
+    distance(.ele[match(pairs[1, ], names(.ele), nomatch = 1)],
+             .ele[match(pairs[2, ], names(.ele), nomatch = 1)],
+             ignore.strand=TRUE)
   })
   b <- do.call(cbind, b)
-  rownames(b) <- paste(pairs[, 1], pairs[, 2], sep=' ')
+  rownames(b) <- paste(pairs[1, ], pairs[2, ], sep=' ')
   b[is.na(b)] <- 0
   ## pairwise difference
   if(missing(ref)){
@@ -265,6 +280,54 @@ pairs_distance <- function(stringList, maskedGeneIds, ref, grs){
   }else{
     d <- lapply(colnames(b), function(.ele){
       sum(abs(b[, .ele] - b[, ref]))/nrow(b)
+    })
+    d <- unlist(d)
+  }
+  return(d)
+}
+
+pairs_direction <- function(stringList, maskedGeneIds, ref, grs){
+  a <- unique(unlist(lapply(stringList, names)))
+  a <- a[!is.na(a)]
+  pairs <- combn(a, 2)
+  b <- lapply(grs, function(.ele){
+    .ele <- suppressWarnings(
+      c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele))
+    paste0(strand(.ele[match(pairs[1, ], names(.ele), nomatch = 1)]),
+           strand(.ele[match(pairs[2, ], names(.ele), nomatch = 1)]))
+  })
+  b <- do.call(cbind, b)
+  rownames(b) <- paste(pairs[1, ], pairs[2, ], sep=' ')
+  ## pairwise difference
+  ## '++' == '--' == '-> ->'
+  ## '+-' == '-> <-'
+  ## '-+' == '<- ->'
+  ## '+*' == '*+'
+  ## '**'
+  mapDir <- function(x){
+    c('++'='++',
+      '--'='++',
+      '+-'='+-',
+      '-+'='-+',
+      '+*'='+*',
+      '*+'='+*',
+      '-*'='+*',
+      '*-'='+*',
+      '**'='**')[x]
+  }
+  pairDirDiff <- function(a, b){
+    mean(mapDir(a)==mapDir(b))
+  }
+  if(missing(ref)){
+    comb <- getComb(colnames(b))
+    d <- apply(comb, 1, function(.ele){
+      pairDirDiff(b[, .ele[1]], b[, .ele[2]])
+    })
+    d <- matrix(d, nrow = ncol(b),
+                dimnames = list(colnames(b), colnames(b)))
+  }else{
+    d <- lapply(colnames(b), function(.ele){
+      pairDirDiff(b[, .ele], b[, ref])
     })
     d <- unlist(d)
   }
