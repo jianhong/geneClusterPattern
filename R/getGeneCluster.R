@@ -1,9 +1,9 @@
 #' calculate the gene cluster
 #' @description
 #' A short description...
-#' @param queryGR The query GRanges outputed by \link{grangesFromEnsemblIDs}.
+#' @param queryGR The query GRanges outputted by \link{grangesFromEnsemblIDs}.
 #' @param queryGeneName The center gene used to search.
-#' @param homologsList The homologs list outputed by \link{getHomologGeneList}.
+#' @param homologsList The homologs list outputted by \link{getHomologGeneList}.
 #' @param k The maximum number of nearest genes.
 #' @param radius The maximum number of gap genes for the search. If
 #' radius is set to greater than 0, k parameter will be ignored.

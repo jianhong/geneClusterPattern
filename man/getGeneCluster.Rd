@@ -7,11 +7,11 @@
 getGeneCluster(queryGR, queryGeneName, homologsList, k = 10, radius = 0)
 }
 \arguments{
-\item{queryGR}{The query GRanges outputed by \link{grangesFromEnsemblIDs}.}
+\item{queryGR}{The query GRanges outputted by \link{grangesFromEnsemblIDs}.}
 
 \item{queryGeneName}{The center gene used to search.}
 
-\item{homologsList}{The homologs list outputed by \link{getHomologGeneList}.}
+\item{homologsList}{The homologs list outputted by \link{getHomologGeneList}.}
 
 \item{k}{The maximum number of nearest genes.}
 

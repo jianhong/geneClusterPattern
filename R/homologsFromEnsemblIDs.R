@@ -1,4 +1,4 @@
-#' retreive a homologs by given ensembl gene ids
+#' retrieve a homologs by given ensembl gene ids
 #' @description
 #' This function retrieves the user specified homologs for given ensembl gene
 #' ids.

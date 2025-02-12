@@ -2,7 +2,7 @@
 % Please edit documentation in R/homologsFromEnsemblIDs.R
 \name{homologsFromEnsemblIDs}
 \alias{homologsFromEnsemblIDs}
-\title{retreive a homologs by given ensembl gene ids}
+\title{retrieve a homologs by given ensembl gene ids}
 \usage{
 homologsFromEnsemblIDs(species, mart, ensembl_gene_ids, ...)
 }

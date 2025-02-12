@@ -21,7 +21,7 @@
 #' The higher the gene order score, the higher the conservation of the gene order.
 #' 'pairs distance', the score is the mean of pairwise coordinates distance.
 #' The higher the gene order score, the lower the conservation of gene order.
-#' 'pairs direction', the socre is the mean of alignment of
+#' 'pairs direction', the score is the mean of alignment of
 #' pairwise strand information.
 #' The higher the gene order score, the higher the conservation of gene order.
 #' @param output Output values
