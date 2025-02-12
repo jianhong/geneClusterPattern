@@ -1,9 +1,9 @@
-pandoc: 3.6.1
+pandoc: 3.6.2
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   vignette: vignette.html
-last_built: 2025-01-03T15:03Z
+last_built: 2025-02-12T21:09Z
 urls:
   reference: https://jianhong.github.io/geneClusterPattern/reference
   article: https://jianhong.github.io/geneClusterPattern/articles
