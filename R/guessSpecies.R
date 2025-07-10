@@ -13,6 +13,12 @@
 #'   guessSpecies('zebrafish')
 #'   guessSpecies('Japanese medaka')
 #'   guessSpecies('stickleback')
+#'   guessSpecies('hsapiens', output='scientific name')
+#'   guessSpecies('human', output='taxid')
+#'   guessSpecies('hg38', output='scientific name')
+#'   guessSpecies('hg38', output='taxid')
+#'   guessSpecies('GRCh38', output='scientific name')
+#'   guessSpecies('GRCh38', output='taxid')
 #' }
 #'
 guessSpecies <- function(species,
@@ -34,8 +40,34 @@ guessSpecies <- function(species,
                                     dataset=paste0(species, '_gene_ensembl'),
                                     ...),
                   'scientific name'=taxonomy[id[1], 'scientific_name'],
-                  'taxid'=taxonomy[id[1], 'taxid'],
+                  'taxid'=taxonomy[id[1], 'tax_id'],
                   'common name'=taxonomy[id[1], 'common_name']))
+  }
+  if(species %in% ucsc_release$UCSC.VERSION){
+    id <- which(ucsc_release$UCSC.VERSION==species & 
+                  !is.na(ucsc_release$UCSC.VERSION))
+    species <- ucsc_release$abbr[id]
+    return(switch(output,
+                  'abbr'=species[1],
+                  'mart'=useEnsembl(biomart = 'ensembl',
+                                    dataset=paste0(species, '_gene_ensembl'),
+                                    ...),
+                  'scientific name'=ucsc_release[id[1], 'scientific_name'],
+                  'taxid'=ucsc_release[id[1], 'tax_id'],
+                  'common name'=ucsc_release[id[1], 'common_name']))
+  }
+  if(species %in% ensembl_release$assembly){
+    id <- which(ensembl_release$assembly==species & 
+                  !is.na(ensembl_release$assembly))
+    species <- ensembl_release$abbr[id]
+    return(switch(output,
+                  'abbr'=species[1],
+                  'mart'=useEnsembl(biomart = 'ensembl',
+                                    dataset=paste0(species, '_gene_ensembl'),
+                                    ...),
+                  'scientific name'=ensembl_release[id[1], 'scientific_name'],
+                  'taxid'=ensembl_release[id[1], 'tax_id'],
+                  'common name'=ensembl_release[id[1], 'common_name']))
   }
   dist_scientific_name <- adist(species, taxonomy$scientific_name,
                                 ignore.case = TRUE)[1, ]
@@ -80,7 +112,7 @@ guessSpecies <- function(species,
                                     dataset=paste0(guess, '_gene_ensembl'),
                                     ...),
                   'scientific name'=sname0,
-                  'taxid'=taxonomy[id[1], 'taxid'],
+                  'taxid'=taxonomy[id[1], 'tax_id'],
                   'common name'=taxonomy[id[1], 'common_name']))
   }else{
     stop('The dataset is not available for ', sname0)

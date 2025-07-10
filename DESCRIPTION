@@ -1,7 +1,7 @@
 Package: geneClusterPattern
 Type: Package
 Title: Plot conserved gene pattern cross multiple species
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(person(given="Jianhong", family="Ou", email="jou@morgridge.org", 
         role=c("aut", "cre"), comment=c(ORCID="0000-0002-8652-2488")))
 Description: Plot conserved gene pattern cross multiple species.

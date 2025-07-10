@@ -28,6 +28,12 @@ if(interactive()){
   guessSpecies('zebrafish')
   guessSpecies('Japanese medaka')
   guessSpecies('stickleback')
+  guessSpecies('hsapiens', output='scientific name')
+  guessSpecies('human', output='taxid')
+  guessSpecies('hg38', output='scientific name')
+  guessSpecies('hg38', output='taxid')
+  guessSpecies('GRCh38', output='scientific name')
+  guessSpecies('GRCh38', output='taxid')
 }
 
 }
