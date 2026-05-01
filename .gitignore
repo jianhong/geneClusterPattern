@@ -4,3 +4,4 @@
 .Ruserdata
 ignore/*
 .positai
+*.Rproj
