@@ -13,6 +13,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="geneClusterPattern">
 <meta property="og:description" content="Plot conserved gene pattern cross multiple species.">
+<meta property="og:image" content="https://jianhong.github.io/geneClusterPattern/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -33,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">geneClusterPattern</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.3</span>
       </span>
     </div>
 
@@ -78,9 +79,87 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="geneclusterpattern">geneClusterPattern<a class="anchor" aria-label="anchor" href="#geneclusterpattern"></a>
+<div class="page-header"><h1 id="geneclusterpattern-">geneClusterPattern <img src="reference/figures/logo.png" align="right" height="200"><a class="anchor" aria-label="anchor" href="#geneclusterpattern-"></a>
 </h1></div>
-<p>Plot conserved gene pattern cross multiple species</p>
+<p><strong>geneClusterPattern</strong> is an R package for constructing and comparing ortholog gene patterns around a focal gene across species.</p>
+<p>It enables the exploration of conserved gene neighborhoods (synteny) by organizing orthologous genes within a defined genomic window and aligning their relative positions across multiple genomes.</p>
+<hr>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p>Understanding how gene order is conserved across species provides insight into genome evolution and functional relationships between genes. <strong>geneClusterPattern</strong> facilitates this by building ortholog gene patterns centered on a gene of interest and comparing their surrounding genomic context across species.</p>
+<p>The package supports two main sources of orthology information:</p>
+<ul>
+<li>Homolog retrieval from Ensembl (via Compara)</li>
+<li>Ortholog group assignments from OrthoFinder</li>
+</ul>
+<p>These inputs are used to reconstruct ordered gene neighborhoods and generate comparable ortholog patterns across species.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h2>
+<ul>
+<li>Retrieve homologs directly from Ensembl</li>
+<li>Support orthogroup input from OrthoFinder</li>
+<li>Construct gene patterns around a focal gene</li>
+<li>Configurable upstream and downstream window size</li>
+<li>Multi-species comparison</li>
+<li>Tidy, analysis-friendly output</li>
+<li>Visualization-ready structure for plotting gene patterns</li>
+</ul>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jianhong/geneClusterPattern"</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="use-cases">Use Cases<a class="anchor" aria-label="anchor" href="#use-cases"></a>
+</h2>
+<ul>
+<li>Conserved synteny analysis</li>
+<li>Comparative genomics</li>
+<li>Evolution of gene clusters</li>
+<li>Functional context of genes</li>
+<li>Cross-species genome organization studies</li>
+</ul>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
+<p>To view documentation of <code>geneClusterPattern</code>, start R and enter:</p>
+<p><code>{r} browseVignettes('geneClusterPattern')</code></p>
+<p>The documentation are also available <a href="https://jianhong.github.io/geneClusterPattern/">online</a>.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="contributions-and-support">Contributions and Support<a class="anchor" aria-label="anchor" href="#contributions-and-support"></a>
+</h2>
+<p>If you would like to contribute to this package, the standard workflow is as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Check that there isn’t already an issue about your idea in the <a href="https://github.com/jianhong/geneClusterPattern/issues" class="external-link">jianhong/geneClusterPattern/issues</a> to avoid duplicating work. If there isn’t one already, please create one so that others know you’re working on this</li>
+<li>
+<a href="https://help.github.com/en/github/getting-started-with-github/fork-a-repo" class="external-link">Fork</a> the <a href="https://github.com/jianhong/geneClusterPattern" class="external-link">jianhong/geneClusterPattern</a> to your GitHub account</li>
+<li>Make the necessary changes / additions within your forked repository following <a href="https://contributions.bioconductor.org/" class="external-link">Bioconductor contribution</a>
+</li>
+<li>Use <code><a href="https://devtools.r-lib.org/reference/build.html" class="external-link">devtools::build</a></code> and <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check</a></code> to check the package work properly.</li>
+<li>Submit a Pull Request against the <code>main</code> or current <code>RELEASE_VERSION</code> branch and wait for the code to be reviewed and merged.</li>
+</ol>
+<p>If you’re not used to this workflow with git, you can start with some <a href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests" class="external-link">docs from GitHub</a> or even their <a href="https://try.github.io/" class="external-link">excellent <code>git</code> resources</a>.</p>
+<p>For further information or help, don’t hesitate to create a new issues at <a href="https://github.com/jianhong/geneClusterPattern/issues" class="external-link">jianhong/geneClusterPattern/issues</a>.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="reporting-bugissues">Reporting bug/issues<a class="anchor" aria-label="anchor" href="#reporting-bugissues"></a>
+</h2>
+<p>Many thanks for taking an interest in improving this package. Please report bug/issues at <a href="https://github.com/jianhong/geneClusterPattern/issues" class="external-link">jianhong/geneClusterPattern/issues</a>.</p>
+</div>
 </div>
   </div>
 
@@ -129,7 +208,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
