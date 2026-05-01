@@ -17,7 +17,3 @@ A GRanges object with homolog_ensembl_gene_ids
 \description{
 Get the gene positions without considering the strand info.
 }
-\examples{
-# example code
-
-}

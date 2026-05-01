@@ -16,7 +16,7 @@
 #' }
 #'
 grangesFromEnsemblIDs <- function(mart, ensembl_gene_ids){
-  stopifnot(is.character(ensembl_gene_ids))
+  if(!missing(ensembl_gene_ids)) stopifnot(is.character(ensembl_gene_ids))
   stopifnot(is(mart, 'Mart'))
   attributes <- c('ensembl_gene_id',
                   'external_gene_name',
@@ -24,10 +24,16 @@ grangesFromEnsemblIDs <- function(mart, ensembl_gene_ids){
                   'start_position',
                   'end_position',
                   'strand')
-  bm <- getBM(attributes = attributes,
-              filters = 'ensembl_gene_id',
-              values = ensembl_gene_ids,
-              mart = mart)
+  if(!missing(ensembl_gene_ids)){
+    bm <- getBM(attributes = attributes,
+                filters = 'ensembl_gene_id',
+                values = ensembl_gene_ids,
+                mart = mart)
+  }else{
+    bm <- getBM(attributes = attributes,
+                mart = mart)
+  }
+  
   if(nrow(bm)>0){
     id <- as.character(bm[, 'ensembl_gene_id', drop=TRUE])
     chr <- as.character(bm[, 'chromosome_name', drop=TRUE])

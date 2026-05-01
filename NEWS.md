@@ -1,5 +1,9 @@
 # Changes in version 0.1.2
 
+  o Add functions for orthologous groups.
+  
+# Changes in version 0.1.2
+
   o Update guessSpecies.R
   
 # Changes in version 0.1.1

@@ -18,6 +18,11 @@ A list of list with gene ranks named by the chromosome names.
 Get the gene position orders without considering the strand info.
 }
 \examples{
-# example code
-
+path <- system.file('extdata/orthofinder/Danio_rerio.GRCz11.pep.all.tsv.gz',
+                  package='geneClusterPattern')
+orthologs <- orthologPairsFromOrthoFinder(path)
+annoGR_list <- readRDS(
+     system.file('extdata/orthofinder/grange.obj.rds',
+                  package='geneClusterPattern'))
+homologs <- getHomologListForOrthoFinder(orthologs, annoGR_list[-1])
 }

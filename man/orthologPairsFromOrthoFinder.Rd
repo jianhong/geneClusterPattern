@@ -7,12 +7,16 @@
 orthologPairsFromOrthoFinder(path)
 }
 \arguments{
-\item{path}{The path of the orthologues result file eg:
-'primary_transcripts/OrthoFinder/Results_Nov01/Orthologues/Danio_rerio.GRCz11.pep.all.tsv'}
+\item{path}{The path of the orthologues result file.}
 }
 \value{
 a list of matrix with the paired orthologues.
 }
 \description{
 Read orthoFinder Orthologues results as a list
+}
+\examples{
+path <- system.file('extdata/orthofinder/Danio_rerio.GRCz11.pep.all.tsv.gz',
+                  package='geneClusterPattern')
+orthologs <- orthologPairsFromOrthoFinder(path)
 }

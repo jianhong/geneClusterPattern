@@ -1,9 +1,12 @@
 #' Read orthoFinder Orthologues results as a list
-#' @param path The path of the orthologues result file eg:
-#' 'primary_transcripts/OrthoFinder/Results_Nov01/Orthologues/Danio_rerio.GRCz11.pep.all.tsv'
+#' @param path The path of the orthologues result file.
 #' @return a list of matrix with the paired orthologues.
 #' @importFrom utils read.delim
-#' @export  
+#' @export
+#' @examples
+#' path <- system.file('extdata/orthofinder/Danio_rerio.GRCz11.pep.all.tsv.gz',
+#'                   package='geneClusterPattern')
+#' orthologs <- orthologPairsFromOrthoFinder(path)
 orthologPairsFromOrthoFinder <- function(path){
   stopifnot(file.exists(path))
   x <- read.delim(path)
@@ -28,22 +31,23 @@ orthologPairsFromOrthoFinder <- function(path){
 #' @param orthologs a two columns matrix
 #' @param mart An Mart object
 #' @return A GRanges object with homolog_ensembl_gene_ids
-#' @export
-#' @examples
-#' # example code
-#' 
 getHomologForOrthoFinder <- function(orthologs, mart){
-  stopifnot(is(mart, 'Mart'))
+  stopifnot(inherits(mart, c('Mart', 'GRanges')))
   stopifnot(
     'orthologs must be an element of output of orthorlogPairsFromOrthoFinder'=
               is.matrix(orthologs))
   stopifnot(
     'orthologs must be an element of output of orthorlogPairsFromOrthoFinder'=
               ncol(orthologs)==2)
-  orthologs <- sub('\\.\\d+$', '', orthologs)
+  orthologs <- trimENSname(orthologs)
   stopifnot('The gene id is not ensembl ids'=
               all(grepl('ENS', orthologs[, 2])))
-  gr <- grangesFromEnsemblIDs(mart = mart, ensembl_gene_ids = orthologs[, 2])
+  if(is(mart, 'Mart')){
+    gr <- grangesFromEnsemblIDs(mart = mart, ensembl_gene_ids = orthologs[, 2])
+  }else{
+    gr <- mart[orthologs[, 2]]
+  }
+  
   if(length(gr)){
     gr$homolog_ensembl_gene_ids <- 
       orthologs[match(names(gr), orthologs[, 2]), 1]
@@ -60,8 +64,13 @@ getHomologForOrthoFinder <- function(orthologs, mart){
 #' @return A list of list with gene ranks named by the chromosome names.
 #' @export
 #' @examples
-#' # example code
-#'
+#' path <- system.file('extdata/orthofinder/Danio_rerio.GRCz11.pep.all.tsv.gz',
+#'                   package='geneClusterPattern')
+#' orthologs <- orthologPairsFromOrthoFinder(path)
+#' annoGR_list <- readRDS(
+#'      system.file('extdata/orthofinder/grange.obj.rds',
+#'                   package='geneClusterPattern'))
+#' homologs <- getHomologListForOrthoFinder(orthologs, annoGR_list[-1])
 getHomologListForOrthoFinder <- function(orthologs, marts){
   stopifnot(
     'orthologs must be an element of output of orthorlogPairsFromOrthoFinder'=

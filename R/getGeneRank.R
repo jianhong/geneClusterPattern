@@ -8,8 +8,9 @@
 #' @importFrom GenomeInfoDb seqnames
 #' @export
 #' @examples
-#' # example code
-#'
+#' fish <- readRDS(system.file('extdata', 'fish.rds', 
+#'                 package = 'geneClusterPattern'))
+#' ggr <- getGeneRank(fish)
 getGeneRank <- function(genes){
   stopifnot(is(genes, 'GRanges'))
   stopifnot('Input must have name.'=length(names(genes))==length(genes))

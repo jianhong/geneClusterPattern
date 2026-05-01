@@ -16,6 +16,7 @@ A list with gene ranks named by the chromosome names.
 Get the gene position orders without considering the strand info.
 }
 \examples{
-# example code
-
+fish <- readRDS(system.file('extdata', 'fish.rds', 
+                package = 'geneClusterPattern'))
+ggr <- getGeneRank(fish)
 }
