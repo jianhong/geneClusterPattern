@@ -1,4 +1,4 @@
-# geneClusterPattern <img src="man/figures/logo.png" align="right" height="200" />
+# geneClusterPattern <img src="man/figures/logo.png" align="right" style="width:200px; margin-left:20px;"  />
 
 **geneClusterPattern** is an R package for constructing and comparing ortholog gene patterns around a focal gene across species.
 

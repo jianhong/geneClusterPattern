@@ -2,7 +2,8 @@
 % Please edit documentation in R/fromOrthogroups.R
 \name{fromOrthogroups}
 \alias{fromOrthogroups}
-\title{Read Orthologues results as a list}
+\title{Read Orthologues results as a list
+This function is under-development.}
 \usage{
 fromOrthogroups(orthogroups, annoGR_list, query_species = 1, split = ", ")
 }
@@ -24,6 +25,7 @@ a list of queryGR and homologsList used by \link{getGeneCluster}.
 }
 \description{
 Read Orthologues results as a list
+This function is under-development.
 }
 \examples{
 orthogroups <- read.delim(

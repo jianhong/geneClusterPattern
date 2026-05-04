@@ -1,4 +1,5 @@
 #' Read Orthologues results as a list
+#' This function is under-development.
 #' @param orthogroups A dataframe with the gene ids for each orthologues group
 #' @param annoGR_list A GRangesList object with the gene information. 
 #' The names of each element should be contain all the gene ids saved in the 

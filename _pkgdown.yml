@@ -3,6 +3,7 @@ url: https://jianhong.github.io/geneClusterPattern
 template:
   params:
     bootswatch: flatly
+  logo: man/figures/logo.png
 
 home:
   title: "geneClusterPattern"
