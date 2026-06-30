@@ -2,7 +2,8 @@
 % Please edit documentation in R/orthoFinder.R
 \name{orthologPairsFromOrthoFinder}
 \alias{orthologPairsFromOrthoFinder}
-\title{Read orthoFinder Orthologues results as a list}
+\title{Read orthoFinder Orthologues results as a list
+Read orthoFinder Orthologues results as a list for each pair of orthologs.}
 \usage{
 orthologPairsFromOrthoFinder(path)
 }
@@ -14,6 +15,7 @@ a list of matrix with the paired orthologues.
 }
 \description{
 Read orthoFinder Orthologues results as a list
+Read orthoFinder Orthologues results as a list for each pair of orthologs.
 }
 \examples{
 path <- system.file('extdata/orthofinder/Danio_rerio.GRCz11.pep.all.tsv.gz',

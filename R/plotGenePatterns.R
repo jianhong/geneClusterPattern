@@ -69,7 +69,8 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
   patternRegions <- rescalRegion(patternRegions)
   ## align center
   if(alignType == 'local'){
-    geneClusterPatterns <- alignCenterId(geneClusterPatterns, patternRegions, ids[1])
+    geneClusterPatterns <- 
+      alignCenterId(geneClusterPatterns, patternRegions, ids[1])
   }else{
     geneClusterPatterns <- alignCenterId(geneClusterPatterns, patternRegions)
   }
@@ -97,7 +98,8 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
     plotOneTrack(geneModels[[i]],
               region=region[names(geneModels)[i]],
               species=paste0(names(geneModels)[i], ': chr',
-                             as.character(seqnames(region[names(geneModels)[i]])))[1],
+                             as.character(seqnames(
+                               region[names(geneModels)[i]])))[1],
               scaleBar = TRUE)
     popViewport()## vp
   }

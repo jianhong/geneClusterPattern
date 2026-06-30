@@ -1,8 +1,10 @@
 #' Drop non-standard chromosomes
+#' Remove the unwanted chromosomes from a list of GRanges object.
 #' @param genesList A list of GRanges object
 #' @param negativePattern The pattern to match the seqnames that does not need.
 #' @return A list of filtered GRanges
-#' @importFrom GenomeInfoDb keepSeqlevels seqlevels
+#' @importFrom GenomeInfoDb keepSeqlevels
+#' @importFrom Seqinfo seqlevels
 #' @export
 #' @examples
 #' library(GenomicRanges)

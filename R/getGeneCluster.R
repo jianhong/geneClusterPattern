@@ -1,6 +1,8 @@
 #' calculate the gene cluster
 #' @description
-#' A short description...
+#' A gene cluster is defined as the k nearest genes surrounding a reference gene
+#' according to the rank matrix. The rank matrix is a gene-by-species matrix,
+#' where each column contains the genomic ranks of genes for a given species.
 #' @param queryGR The query GRanges outputted by \link{grangesFromEnsemblIDs}.
 #' @param queryGeneName The center gene used to search.
 #' @param homologsList The homologs list outputted by \link{getHomologGeneList}.
@@ -77,7 +79,7 @@ getGeneCluster <- function(queryGR, queryGeneName,
   rownames(y) <- syms
   # make all un-available homologs as far distance
   y[is.na(y)] <- -length(syms)
-  #d <- dist(y)
+
   if(radius>0){
     k <- nrow(y)
     nearest <- nn2(y, k=k, radius = radius, searchtype = 'radius')

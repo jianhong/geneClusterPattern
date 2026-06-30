@@ -1,9 +1,19 @@
+#' Apply colors to gene
 #' @noRd
 #' @param gr A GRanges object
 #' @param colors The color sets
 #' @return A GRanges object with colors
 #' @importFrom BiocGenerics start end width strand
+#' @importFrom grDevices palette
+#' @importFrom stats setNames
 addGeneInfo <- function(gr, colors){
+  stopifnot(is(gr, 'GRanges'))
+  stopifnot(length(names(gr))==length(gr))
+  if(is.numeric(colors)){
+    stopifnot(all(colors<9))
+    ## convert number color to character
+    colors <- setNames(palette()[colors], names(colors))
+  }
   gr$feature <- rep('exon', length(gr))
   gr$featureID <- gr$gene_name
   gr$hide_label <- !names(gr) %in% names(colors)

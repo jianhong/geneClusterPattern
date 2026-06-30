@@ -22,7 +22,9 @@ radius is set to greater than 0, k parameter will be ignored.}
 The ids of the cluster for the center gene.
 }
 \description{
-A short description...
+A gene cluster is defined as the k nearest genes surrounding a reference gene
+according to the rank matrix. The rank matrix is a gene-by-species matrix,
+where each column contains the genomic ranks of genes for a given species.
 }
 \examples{
 # example code

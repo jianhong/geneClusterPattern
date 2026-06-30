@@ -31,7 +31,6 @@
 #' @importFrom Biostrings AA_PROTEINOGENIC
 #' @export
 #' @examples
-#' # example code
 #' fish <- readRDS(system.file('extdata', 'fish.rds',
 #' package = 'geneClusterPattern'))
 #' homologs <- readRDS(system.file('extdata', 'homologs.rds',
@@ -90,7 +89,6 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   # get the strings of gene order for each species
   geneModels <- checkAndGetGeneModels(genesList, ids=ids, max_gap=max_gap)
   geneIds <- lapply(geneModels, function(.ele) names(.ele$geneModel))
-  #strand <- lapply(geneModels, function(.ele) strand(.ele$geneModel))
   grs <- lapply(geneModels, function(.ele) .ele$geneModel)
 
   ## mask the non-essential IDs
@@ -207,8 +205,8 @@ spearman_correlation <- function(stringList, maskedGeneIds, ref, grs){
 }
 
 jaccard <- function(a, b) {
-  intersection = length(intersect(a, b))
-  union = length(a) + length(b) - intersection
+  intersection <- length(intersect(a, b))
+  union <- length(a) + length(b) - intersection
   return (intersection/union)
 }
 
@@ -260,8 +258,7 @@ pairs_distance <- function(stringList, maskedGeneIds, ref, grs){
   a <- a[!is.na(a)]
   pairs <- combn(a, 2)
   b <- lapply(grs, function(.ele){
-    .ele <- suppressWarnings(
-      c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele))
+    .ele <- c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele)
     distance(.ele[match(pairs[1, ], names(.ele), nomatch = 1)],
              .ele[match(pairs[2, ], names(.ele), nomatch = 1)],
              ignore.strand=TRUE)
@@ -291,8 +288,7 @@ pairs_direction <- function(stringList, maskedGeneIds, ref, grs){
   a <- a[!is.na(a)]
   pairs <- combn(a, 2)
   b <- lapply(grs, function(.ele){
-    .ele <- suppressWarnings(
-      c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele))
+    .ele <- c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele)
     paste0(strand(.ele[match(pairs[1, ], names(.ele), nomatch = 1)]),
            strand(.ele[match(pairs[2, ], names(.ele), nomatch = 1)]))
   })

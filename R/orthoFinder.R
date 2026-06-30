@@ -1,4 +1,5 @@
 #' Read orthoFinder Orthologues results as a list
+#' Read orthoFinder Orthologues results as a list for each pair of orthologs.
 #' @param path The path of the orthologues result file.
 #' @return a list of matrix with the paired orthologues.
 #' @importFrom utils read.delim
@@ -28,6 +29,7 @@ orthologPairsFromOrthoFinder <- function(path){
 #' Get the gene positions for output of OrthoFinder
 #' @description
 #' Get the gene positions without considering the strand info.
+#' @noRd
 #' @param orthologs a two columns matrix
 #' @param mart An Mart object
 #' @return A GRanges object with homolog_ensembl_gene_ids

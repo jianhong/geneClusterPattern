@@ -1,3 +1,7 @@
+# Changes in version 0.1.4
+
+  o Add tests.
+  
 # Changes in version 0.1.2
 
   o Add functions for orthologous groups.

@@ -4,8 +4,7 @@
 #' @param species The y label
 #' @param scaleBar Add scale bar or not
 #' @return NULL
-#' @importFrom trackViewer trackList optimizeStyle setTrackViewerStyleParam
-#' viewTracks
+#' @importFrom trackViewer trackList optimizeStyle setTrackViewerStyleParam viewTracks
 #' @importFrom methods new
 plotOneTrack <- function(gr, region, species, scaleBar=FALSE){
   ## remove the gr in multiple strand

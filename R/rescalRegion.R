@@ -1,3 +1,4 @@
+#' rescale the region width to similar width.
 #' @noRd
 #' @param gr A GRanges
 #' @return A GRanges with width rescaled.

@@ -5,7 +5,7 @@
 #' @return A list with gene ranks named by the chromosome names.
 #' @importFrom IRanges promoters
 #' @importFrom BiocGenerics strand
-#' @importFrom GenomeInfoDb seqnames
+#' @importFrom Seqinfo seqnames
 #' @export
 #' @examples
 #' fish <- readRDS(system.file('extdata', 'fish.rds', 
@@ -14,6 +14,7 @@
 getGeneRank <- function(genes){
   stopifnot(is(genes, 'GRanges'))
   stopifnot('Input must have name.'=length(names(genes))==length(genes))
+  ## only consider start position
   strand(genes) <- '*'
   genes <- promoters(genes, upstream = 0, downstream = 1)
   genes <- split(genes, as.character(seqnames(genes)))

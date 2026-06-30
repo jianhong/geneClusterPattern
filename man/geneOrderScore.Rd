@@ -54,7 +54,6 @@ the score or values matrix such as adist, or alignment scores.
 Calculate the gene order score.
 }
 \examples{
-# example code
 fish <- readRDS(system.file('extdata', 'fish.rds',
 package = 'geneClusterPattern'))
 homologs <- readRDS(system.file('extdata', 'homologs.rds',

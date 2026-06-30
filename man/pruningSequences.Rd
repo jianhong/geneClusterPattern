@@ -2,7 +2,8 @@
 % Please edit documentation in R/pruningSequences.R
 \name{pruningSequences}
 \alias{pruningSequences}
-\title{Drop non-standard chromosomes}
+\title{Drop non-standard chromosomes
+Remove the unwanted chromosomes from a list of GRanges object.}
 \usage{
 pruningSequences(genesList, negativePattern = "[_.M]")
 }
@@ -16,6 +17,7 @@ A list of filtered GRanges
 }
 \description{
 Drop non-standard chromosomes
+Remove the unwanted chromosomes from a list of GRanges object.
 }
 \examples{
 library(GenomicRanges)
