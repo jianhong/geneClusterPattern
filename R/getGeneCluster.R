@@ -15,8 +15,13 @@
 #' @importFrom methods is
 #' @export
 #' @examples
-#' # example code
-#'
+#' fish <- readRDS(system.file('extdata', 'fish.rds',
+#'                             package = 'geneClusterPattern'))
+#' homologs <- readRDS(system.file('extdata', 'homologs.rds',
+#'                                 package = 'geneClusterPattern'))
+#' queryGene <- 'inhbaa'
+#' nearestNeighbors <- getGeneCluster(fish, queryGene, homologs)
+#' 
 getGeneCluster <- function(queryGR, queryGeneName,
                            homologsList, k = 10, radius = 0){
   stopifnot(length(queryGeneName)==1)

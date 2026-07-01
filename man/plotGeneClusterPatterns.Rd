@@ -38,6 +38,12 @@ invisible list of plot data.
 Plot the gene patters for given ids.
 }
 \examples{
-# example code
-
+fish <- readRDS(system.file('extdata', 'fish.rds',
+                            package = 'geneClusterPattern'))
+homologs <- readRDS(system.file('extdata', 'homologs.rds',
+                                package = 'geneClusterPattern'))
+queryGene <- 'inhbaa'
+nearestNeighbors <- getGeneCluster(fish, queryGene, homologs)
+genesList <- c(drerio=fish, homologs)
+pgp <- plotGeneClusterPatterns(genesList, nearestNeighbors)
 }

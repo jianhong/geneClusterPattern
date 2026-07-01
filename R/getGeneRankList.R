@@ -7,10 +7,19 @@
 #' @param ... Parameters could be used by \link[biomaRt]{useEnsembl} except
 #' `biomart`.
 #' @return A list of list with gene ranks named by the chromosome names.
-#' @export
+#' @noRd
 #' @examples
-#' # example code
-#'
+#' if(interactive()){
+#'   ## Ensembl server may not response
+#'   library(biomaRt)
+#'   fish <- readRDS(system.file('extdata', 'fish.rds',
+#'                             package = 'geneClusterPattern'))
+#'   ensembl_gene_ids <- names(fish[seqnames(fish)=='24'])
+#'   species <- c('hsapiens', 'mmusculus')
+#'   fish_mart <- useMart("ENSEMBL_MART_ENSEMBL", "drerio_gene_ensembl")
+#'   homologs <- getHomologGeneRankList(species, fish_mart, ensembl_gene_ids)
+#' }
+#' 
 getHomologGeneRankList <- function(species, mart, ensembl_gene_ids, ...){
   homologs <- lapply(species, homologsFromEnsemblIDs, mart=mart,
                      ensembl_gene_ids = ensembl_gene_ids, ...)

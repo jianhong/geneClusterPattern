@@ -17,9 +17,14 @@
 #' @importFrom IRanges subsetByOverlaps ranges<-
 #' @export
 #' @examples
-#' # example code
-#'
-
+#' fish <- readRDS(system.file('extdata', 'fish.rds',
+#'                             package = 'geneClusterPattern'))
+#' homologs <- readRDS(system.file('extdata', 'homologs.rds',
+#'                                 package = 'geneClusterPattern'))
+#' queryGene <- 'inhbaa'
+#' nearestNeighbors <- getGeneCluster(fish, queryGene, homologs)
+#' genesList <- c(drerio=fish, homologs)
+#' pgp <- plotGeneClusterPatterns(genesList, nearestNeighbors)
 plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
                              colors, maxNonEssential=5,
                              alignType=c('local', 'global')){
@@ -81,18 +86,18 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
   grid.newpage()
   grid.text('Gene Patterns', x = 0.5, y=0.975)
   pushViewport(viewport(y=0.525, height = 0.45, just=c(0.5, 0)))
-  for(i in seq_along(geneClusterPatterns)){
+  lapply(seq_along(geneClusterPatterns), function(i){
     vp <- viewport(x=0, y=h*(i-1), width=0.95, height = h, just = c(0, 0))
     pushViewport(vp)
     plotOneTrack(geneClusterPatterns[[i]],
-              region=patternRegions[i],
-              species=names(geneClusterPatterns)[i])
+                 region=patternRegions[i],
+                 species=names(geneClusterPatterns)[i])
     popViewport()## vp
-  }
+  })
   popViewport()
   grid.text('Real Gene Track', x = 0.5, y=0.5)
   pushViewport(viewport(y=0.05, height = 0.45, just=c(0.5, 0)))
-  for(i in seq_along(geneModels)){
+  lapply(seq_along(geneModels), function(i){
     vp <- viewport(x=0, y=h*(i-1), width=0.95, height = h, just = c(0, 0))
     pushViewport(vp)
     plotOneTrack(geneModels[[i]],
@@ -102,7 +107,7 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
                                region[names(geneModels)[i]])))[1],
               scaleBar = TRUE)
     popViewport()## vp
-  }
+  })
   popViewport()
   return(invisible(list(
     geneClusterPatterns=geneClusterPatterns,

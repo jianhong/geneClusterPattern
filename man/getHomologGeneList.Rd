@@ -23,6 +23,15 @@ A list of GRanges objects with gene positions.
 Get the gene positions without considering the strand info.
 }
 \examples{
-# example code
+if(interactive()){
+  ## Ensembl server may not response
+  library(biomaRt)
+  fish <- readRDS(system.file('extdata', 'fish.rds',
+                            package = 'geneClusterPattern'))
+  ensembl_gene_ids <- names(fish[seqnames(fish)=='24'])
+  species <- c('hsapiens', 'mmusculus')
+  fish_mart <- useMart("ENSEMBL_MART_ENSEMBL", "drerio_gene_ensembl")
+  homologs <- getHomologGeneList(species, fish_mart, ensembl_gene_ids)
+}
 
 }

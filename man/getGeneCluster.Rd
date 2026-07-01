@@ -27,6 +27,11 @@ according to the rank matrix. The rank matrix is a gene-by-species matrix,
 where each column contains the genomic ranks of genes for a given species.
 }
 \examples{
-# example code
+fish <- readRDS(system.file('extdata', 'fish.rds',
+                            package = 'geneClusterPattern'))
+homologs <- readRDS(system.file('extdata', 'homologs.rds',
+                                package = 'geneClusterPattern'))
+queryGene <- 'inhbaa'
+nearestNeighbors <- getGeneCluster(fish, queryGene, homologs)
 
 }

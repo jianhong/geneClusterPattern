@@ -9,7 +9,16 @@
 #' @return A list of GRanges objects with gene positions.
 #' @export
 #' @examples
-#' # example code
+#' if(interactive()){
+#'   ## Ensembl server may not response
+#'   library(biomaRt)
+#'   fish <- readRDS(system.file('extdata', 'fish.rds',
+#'                             package = 'geneClusterPattern'))
+#'   ensembl_gene_ids <- names(fish[seqnames(fish)=='24'])
+#'   species <- c('hsapiens', 'mmusculus')
+#'   fish_mart <- useMart("ENSEMBL_MART_ENSEMBL", "drerio_gene_ensembl")
+#'   homologs <- getHomologGeneList(species, fish_mart, ensembl_gene_ids)
+#' }
 #'
 getHomologGeneList <- function(species, mart, ensembl_gene_ids, ...){
   homologs <- lapply(species, homologsFromEnsemblIDs, mart=mart,
