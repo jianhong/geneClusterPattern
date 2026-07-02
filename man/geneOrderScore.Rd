@@ -11,7 +11,7 @@ geneOrderScore(
   k = length(ids),
   max_gap = 1e+07,
   method = c("edit distance", "global alignment score", "spearman correlation",
-    "non-random score", "pairs distance", "pairs direction"),
+    "kendall correlation", "non-random score", "pairs distance", "pairs direction"),
   output = c("score", "value matrix")
 )
 }
@@ -29,18 +29,15 @@ geneOrderScore(
 \item{method}{The method to calculate the gene order score.
 'edit distance', the gene order score is the mean of 
 edit (Levenshtein) distance of given ids from different species.
-Gene order score = mean(adist)*k/length(ids).
-The higher the gene order score, the lower the conservation of the gene order.
+Gene order score = k/length(ids)/(mean(adist)+1).
 'global alignment score', the gene order score is the mean of global 
 alignment score. see \link[pwalign]{pairwiseAlignment}.
-The higher the gene order score, the higher the conservation of the gene order.
 'spearman correlation', the score is the mean of absolute value of
 Spearman correlation of the genes appearance order.
 'non-random score', the score is the mean of Jaccard index of 2-order and
 3-order of ids for paired samples.
-The higher the gene order score, the higher the conservation of the gene order.
 'pairs distance', the score is the mean of pairwise coordinates distance.
-The higher the gene order score, the lower the conservation of gene order.
+Score = k/length(ids)/(mean(abs(coordinates distance))+1).
 'pairs direction', the score is the mean of alignment of
 pairwise strand information.
 The higher the gene order score, the higher the conservation of gene order.}
@@ -62,10 +59,13 @@ queryGene <- 'inhbaa'
 nearest10neighbors <- getGeneCluster(fish, queryGene, homologs, k=10)
 genesList <- c(drerio=fish, homologs)[
 c("hsapiens", "mmusculus", "drerio", "olatipes", "nfurzeri", "gaculeatus")]
+# set zebrafish as reference
 geneOrderScore(genesList, nearest10neighbors, ref='drerio')
+# default first element is reference
 geneOrderScore(genesList, nearest10neighbors, method='edit distance')
 geneOrderScore(genesList, nearest10neighbors, method='global alignment score')
 geneOrderScore(genesList, nearest10neighbors, method='spearman correlation')
+geneOrderScore(genesList, nearest10neighbors, method='kendall correlation')
 geneOrderScore(genesList, nearest10neighbors, method='non-random score')
 geneOrderScore(genesList, nearest10neighbors, method='pairs distance')
 geneOrderScore(genesList, nearest10neighbors, method='pairs direction')

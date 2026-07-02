@@ -9,18 +9,15 @@
 #' @param method The method to calculate the gene order score.
 #' 'edit distance', the gene order score is the mean of 
 #' edit (Levenshtein) distance of given ids from different species.
-#' Gene order score = mean(adist)*k/length(ids).
-#' The higher the gene order score, the lower the conservation of the gene order.
+#' Gene order score = k/length(ids)/(mean(adist)+1).
 #' 'global alignment score', the gene order score is the mean of global 
 #' alignment score. see \link[pwalign]{pairwiseAlignment}.
-#' The higher the gene order score, the higher the conservation of the gene order.
 #' 'spearman correlation', the score is the mean of absolute value of
 #' Spearman correlation of the genes appearance order.
 #' 'non-random score', the score is the mean of Jaccard index of 2-order and
 #' 3-order of ids for paired samples.
-#' The higher the gene order score, the higher the conservation of the gene order.
 #' 'pairs distance', the score is the mean of pairwise coordinates distance.
-#' The higher the gene order score, the lower the conservation of gene order.
+#' Score = k/length(ids)/(mean(abs(coordinates distance))+1).
 #' 'pairs direction', the score is the mean of alignment of
 #' pairwise strand information.
 #' The higher the gene order score, the higher the conservation of gene order.
@@ -39,10 +36,13 @@
 #' nearest10neighbors <- getGeneCluster(fish, queryGene, homologs, k=10)
 #' genesList <- c(drerio=fish, homologs)[
 #' c("hsapiens", "mmusculus", "drerio", "olatipes", "nfurzeri", "gaculeatus")]
+#' # set zebrafish as reference
 #' geneOrderScore(genesList, nearest10neighbors, ref='drerio')
+#' # default first element is reference
 #' geneOrderScore(genesList, nearest10neighbors, method='edit distance')
 #' geneOrderScore(genesList, nearest10neighbors, method='global alignment score')
 #' geneOrderScore(genesList, nearest10neighbors, method='spearman correlation')
+#' geneOrderScore(genesList, nearest10neighbors, method='kendall correlation')
 #' geneOrderScore(genesList, nearest10neighbors, method='non-random score')
 #' geneOrderScore(genesList, nearest10neighbors, method='pairs distance')
 #' geneOrderScore(genesList, nearest10neighbors, method='pairs direction')
@@ -50,6 +50,7 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
                            method = c('edit distance',
                                       'global alignment score',
                                       'spearman correlation',
+                                      'kendall correlation',
                                       'non-random score',
                                       'pairs distance',
                                       'pairs direction'),
@@ -94,7 +95,7 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
   ## mask the non-essential IDs
   stringList <- lapply(geneIds, function(.ele) geneIdMap[.ele])
   
-  ## rever string if reversed
+  ## reverse string if reversed
   stringList <-
     reverseByCor(stringList,
                  ref = if(missing(ref)) names(stringList)[1]
@@ -147,6 +148,8 @@ edit_distance <- function(stringList, maskedGeneIds, ref, grs){
                   ignore.case = FALSE, partial = FALSE)
     dist <- dist[, colnames(dist)!=ref, drop=TRUE]
   }
+  # reciprocal to make higher value more conserved
+  dist <- 1/(dist+1)
   return(dist)
 }
 
@@ -172,7 +175,8 @@ global_alignment_score <- function(stringList, maskedGeneIds, ref, grs){
   }
   return(dist)
 }
-spearman_correlation <- function(stringList, maskedGeneIds, ref, grs){
+spearman_correlation <- function(stringList, maskedGeneIds, ref, grs,
+                                 method='spearman'){
   a <- unique(unlist(stringList))
   a <- a[!is.na(a)]
   b <- lapply(stringList, function(.ele){
@@ -185,7 +189,7 @@ spearman_correlation <- function(stringList, maskedGeneIds, ref, grs){
   if(missing(ref)){
     comb <- getComb(names(b))
     cor <- apply(comb, 1, function(.ele){
-      tryCatch(cor(b[[.ele[1]]], b[[.ele[2]]], method = 'spearman'),
+      tryCatch(cor(b[[.ele[1]]], b[[.ele[2]]], method = method),
                error=function(.e){
                  0
                })
@@ -194,7 +198,7 @@ spearman_correlation <- function(stringList, maskedGeneIds, ref, grs){
                   dimnames = list(names(b), names(b)))
   }else{
     cor <- lapply(seq_along(b), function(.ele)
-      tryCatch(cor(b[[ref]], b[[.ele]], method = 'spearman'),
+      tryCatch(cor(b[[ref]], b[[.ele]], method = method),
                error=function(.e){
                  0
                }))
@@ -202,6 +206,10 @@ spearman_correlation <- function(stringList, maskedGeneIds, ref, grs){
   }
   cor[is.na(cor)] <- 0
   return(cor)
+}
+
+kendall_correlation <- function(stringList, maskedGeneIds, ref, grs){
+  spearman_correlation(stringList, maskedGeneIds, ref, grs, method='kendall')
 }
 
 jaccard <- function(a, b) {
@@ -251,14 +259,21 @@ non_random_score <- function(stringList, maskedGeneIds, ref, grs){
   return(ji)
 }
 
+NA_GR <- function(x){
+  y <- GRanges(c('NA', as.character(seqnames(x))), IRanges(c(1, start(x)),
+                                             width = c(1, width(x)),
+                                             names=c('NA', names(x))),
+               strand = c('*', as.character(strand(x))))
+}
 #' @importFrom utils combn
 #' @importFrom IRanges distance
 pairs_distance <- function(stringList, maskedGeneIds, ref, grs){
   a <- unique(unlist(lapply(stringList, names)))
   a <- a[!is.na(a)]
   pairs <- combn(a, 2)
+  
   b <- lapply(grs, function(.ele){
-    .ele <- c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele)
+    .ele <- NA_GR(.ele)
     distance(.ele[match(pairs[1, ], names(.ele), nomatch = 1)],
              .ele[match(pairs[2, ], names(.ele), nomatch = 1)],
              ignore.strand=TRUE)
@@ -275,11 +290,10 @@ pairs_distance <- function(stringList, maskedGeneIds, ref, grs){
     d <- matrix(d, nrow = ncol(b),
                 dimnames = list(colnames(b), colnames(b)))
   }else{
-    d <- lapply(colnames(b), function(.ele){
-      sum(abs(b[, .ele] - b[, ref]))/nrow(b)
-    })
-    d <- unlist(d)
+    d <- colMeans(abs(b - b[, ref]))
+    d <- d[names(d) != ref]
   }
+  d <- 1e6/(d+1)
   return(d)
 }
 
@@ -288,7 +302,7 @@ pairs_direction <- function(stringList, maskedGeneIds, ref, grs){
   a <- a[!is.na(a)]
   pairs <- combn(a, 2)
   b <- lapply(grs, function(.ele){
-    .ele <- c(GRanges('NA', IRanges(1, width = 1, names='NA')), .ele)
+    .ele <- NA_GR(.ele)
     paste0(strand(.ele[match(pairs[1, ], names(.ele), nomatch = 1)]),
            strand(.ele[match(pairs[2, ], names(.ele), nomatch = 1)]))
   })
@@ -328,8 +342,4 @@ pairs_direction <- function(stringList, maskedGeneIds, ref, grs){
     d <- unlist(d)
   }
   return(d)
-}
-
-kolmogorov_complexity <- function(stringList, maskedGeneIds, ref, grs){
-  
 }

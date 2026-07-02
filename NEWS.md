@@ -1,3 +1,7 @@
+# Changes in version 0.1.6
+
+  o Update the geneOrderScore function.
+  
 # Changes in version 0.1.4
 
   o Add tests.
