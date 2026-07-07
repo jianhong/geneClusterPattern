@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">geneClusterPattern</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.7</span>
       </span>
     </div>
 
@@ -104,8 +104,10 @@
 'edit distance', the gene order score is the mean of
 edit (Levenshtein) distance of given ids from different species.
 Gene order score = k/length(ids)/(mean(adist)+1).
-'global alignment score', the gene order score is the mean of global
-alignment score. see <a href="https://rdrr.io/pkg/pwalign/man/pairwiseAlignment.html" class="external-link">pairwiseAlignment</a>.
+'global alignment score', the gene order score is the mean of normalized
+global alignment score.
+For global alignment score please refer <a href="https://rdrr.io/pkg/pwalign/man/pairwiseAlignment.html" class="external-link">pairwiseAlignment</a>.
+The alignment score will be normalized by the reference self alignment score.
 'spearman correlation', the score is the mean of absolute value of
 Spearman correlation of the genes appearance order.
 'non-random score', the score is the mean of Jaccard index of 2-order and
