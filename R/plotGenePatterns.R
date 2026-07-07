@@ -10,7 +10,7 @@
 #' two essential genes.
 #' @param alignType Align the gene pattern by query gene ('local') or by the
 #' clusters ('global').
-#' @param The label cex value. default is 0.5.
+#' @param label_size The label cex value. default is 0.5.
 #' @return invisible list of plot data.
 #' @importFrom GenomicRanges GRanges GRangesList
 #' @importFrom grid grid.newpage viewport pushViewport popViewport grid.text

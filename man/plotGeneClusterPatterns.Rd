@@ -32,7 +32,7 @@ two essential genes.}
 \item{alignType}{Align the gene pattern by query gene ('local') or by the
 clusters ('global').}
 
-\item{The}{label cex value. default is 0.5.}
+\item{label_size}{The label cex value. default is 0.5.}
 }
 \value{
 invisible list of plot data.
