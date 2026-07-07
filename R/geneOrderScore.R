@@ -10,8 +10,10 @@
 #' 'edit distance', the gene order score is the mean of 
 #' edit (Levenshtein) distance of given ids from different species.
 #' Gene order score = k/length(ids)/(mean(adist)+1).
-#' 'global alignment score', the gene order score is the mean of global 
-#' alignment score. see \link[pwalign]{pairwiseAlignment}.
+#' 'global alignment score', the gene order score is the mean of normalized
+#' global alignment score.
+#' For global alignment score please refer \link[pwalign]{pairwiseAlignment}.
+#' The alignment score will be normalized by the reference self alignment score.
 #' 'spearman correlation', the score is the mean of absolute value of
 #' Spearman correlation of the genes appearance order.
 #' 'non-random score', the score is the mean of Jaccard index of 2-order and
@@ -168,10 +170,12 @@ global_alignment_score <- function(stringList, maskedGeneIds, ref, grs){
     dist <- matrix(dist, nrow = length(maskedGeneIds),
                    dimnames = list(names(maskedGeneIds), names(maskedGeneIds)))
   }else{
-    dist <- lapply(maskedGeneIds[names(maskedGeneIds)!=ref], function(s2){
-      pairwiseAlignment(maskedGeneIds[[ref]], s2, scoreOnly = TRUE, type='global')
+    dist <- lapply(maskedGeneIds, function(s2){
+      pairwiseAlignment(maskedGeneIds[[ref]], s2,
+                        scoreOnly = TRUE, type='global')
     })
     dist <- unlist(dist)
+    dist <- dist[names(maskedGeneIds)!=ref]/dist[names(maskedGeneIds)==ref]
   }
   return(dist)
 }

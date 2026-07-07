@@ -10,6 +10,7 @@
 #' two essential genes.
 #' @param alignType Align the gene pattern by query gene ('local') or by the
 #' clusters ('global').
+#' @param The label cex value. default is 0.5.
 #' @return invisible list of plot data.
 #' @importFrom GenomicRanges GRanges GRangesList
 #' @importFrom grid grid.newpage viewport pushViewport popViewport grid.text
@@ -27,7 +28,8 @@
 #' pgp <- plotGeneClusterPatterns(genesList, nearestNeighbors)
 plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
                              colors, maxNonEssential=5,
-                             alignType=c('local', 'global')){
+                             alignType=c('local', 'global'),
+                             label_size=0.5){
   alignType <- match.arg(alignType)
   if(!missing(additionalID)) ids <- unique(c(ids, additionalID))
   if(missing(colors)){
@@ -91,7 +93,8 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
     pushViewport(vp)
     plotOneTrack(geneClusterPatterns[[i]],
                  region=patternRegions[i],
-                 species=names(geneClusterPatterns)[i])
+                 species=names(geneClusterPatterns)[i],
+                 label_size=label_size)
     popViewport()## vp
   })
   popViewport()
@@ -105,7 +108,8 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
               species=paste0(names(geneModels)[i], ': chr',
                              as.character(seqnames(
                                region[names(geneModels)[i]])))[1],
-              scaleBar = TRUE)
+              scaleBar = TRUE,
+              label_size=label_size)
     popViewport()## vp
   })
   popViewport()

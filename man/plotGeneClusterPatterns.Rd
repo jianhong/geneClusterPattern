@@ -11,7 +11,8 @@ plotGeneClusterPatterns(
   max_gap = 1e+07,
   colors,
   maxNonEssential = 5,
-  alignType = c("local", "global")
+  alignType = c("local", "global"),
+  label_size = 0.5
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ two essential genes.}
 
 \item{alignType}{Align the gene pattern by query gene ('local') or by the
 clusters ('global').}
+
+\item{The}{label cex value. default is 0.5.}
 }
 \value{
 invisible list of plot data.

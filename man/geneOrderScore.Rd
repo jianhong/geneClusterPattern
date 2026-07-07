@@ -30,8 +30,10 @@ geneOrderScore(
 'edit distance', the gene order score is the mean of 
 edit (Levenshtein) distance of given ids from different species.
 Gene order score = k/length(ids)/(mean(adist)+1).
-'global alignment score', the gene order score is the mean of global 
-alignment score. see \link[pwalign]{pairwiseAlignment}.
+'global alignment score', the gene order score is the mean of normalized
+global alignment score.
+For global alignment score please refer \link[pwalign]{pairwiseAlignment}.
+The alignment score will be normalized by the reference self alignment score.
 'spearman correlation', the score is the mean of absolute value of
 Spearman correlation of the genes appearance order.
 'non-random score', the score is the mean of Jaccard index of 2-order and

@@ -1,3 +1,7 @@
+# Changes in version 0.1.7
+
+  o add label_size for plotGenePatterns function.
+  
 # Changes in version 0.1.6
 
   o Update the geneOrderScore function.
