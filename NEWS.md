@@ -1,3 +1,7 @@
+# Changes in version 0.1.8
+
+  o minimize the example file size.
+  
 # Changes in version 0.1.7
 
   o add label_size for plotGenePatterns function.

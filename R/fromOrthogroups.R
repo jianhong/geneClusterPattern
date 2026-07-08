@@ -53,6 +53,8 @@ fromOrthogroups <-
   }
   if(sum(sp1 %in% names(annoGR_list[[query_species]]))<0.1*length(sp1)){
     stop('less than 10% gene info for the query species exist in annoGR_list')
+  }else{
+    sp1 <- sp1[sp1 %in% names(annoGR_list[[query_species]])]
   }
   sp1 <- annoGR_list[[query_species]][sp1]
   
@@ -73,6 +75,9 @@ fromOrthogroups <-
       q <- trimENSname(q)
       p <- trimENSname(p)
     }
+    keep <- p %in% names(b)
+    p <- p[keep]
+    q <- q[keep]
     b <- b[p]
     b$homolog_ensembl_gene_ids <- q
     b
