@@ -1,3 +1,7 @@
+# Changes in version 0.99.1
+
+  o replace the workflows by R-universe testing.
+  
 # Changes in version 0.99.0
 
   o Prepare for Bioconductor submission.
