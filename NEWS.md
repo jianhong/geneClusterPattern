@@ -1,3 +1,7 @@
+# Changes in version 0.99.0
+
+  o Prepare for Bioconductor submission.
+  
 # Changes in version 0.1.9
 
   o update the documentation and fix the duplicated codes.

@@ -49,7 +49,7 @@ This framework is particularly useful for investigating conserved synteny, ident
 if (!require("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
-# BiocManager::install('geneClusterPattern')
+BiocManager::install('geneClusterPattern')
 # or install from github
 BiocManager::install('jianhong/geneClusterPattern')
 ```
