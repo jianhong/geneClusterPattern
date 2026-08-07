@@ -1,3 +1,7 @@
+# Changes in version 0.1.9
+
+  o update the documentation and fix the duplicated codes.
+  
 # Changes in version 0.1.8
 
   o minimize the example file size.

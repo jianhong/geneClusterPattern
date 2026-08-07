@@ -21,21 +21,9 @@
 #' }
 #' 
 getHomologGeneRankList <- function(species, mart, ensembl_gene_ids, ...){
-  homologs <- lapply(species, homologsFromEnsemblIDs, mart=mart,
-                     ensembl_gene_ids = ensembl_gene_ids, ...)
-  names(homologs) <- species
-  ## convert the name and homolog_ensembl_gene_ids
-  homologs <- convertNamesOfHomologIDs(homologs)
+  homologs <- getHomologGeneList(species, mart, ensembl_gene_ids, ...)
   
   homoRnk <- lapply(homologs, getGeneRank)
   return(homoRnk)
 }
 
-convertNamesOfHomologIDs <- function(homologs){
-  lapply(homologs, function(.ele){
-    n <- names(.ele)
-    names(.ele) <- .ele$homolog_ensembl_gene_ids
-    .ele$homolog_ensembl_gene_ids <- n
-    .ele
-  })
-}

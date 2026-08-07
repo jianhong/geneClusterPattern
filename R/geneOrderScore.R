@@ -230,7 +230,7 @@ non_random_score <- function(stringList, maskedGeneIds, ref, grs){
   # index = shared pairs / all pairs
   # like Jaccard index
   b <- lapply(maskedGeneIds, function(.ele){
-    .ele <- gsub('--+', '--', .ele) # gapLetter <- '-' # 45
+    .ele <- gsub('--+', '--', .ele)
     n <- seq.int(nchar(.ele))
     s <- strsplit(.ele, '')[[1]]
     if(length(n)>1){
@@ -278,12 +278,12 @@ pairs_distance <- function(stringList, maskedGeneIds, ref, grs){
   
   b <- lapply(grs, function(.ele){
     .ele <- NA_GR(.ele)
-    distance(.ele[match(pairs[1, ], names(.ele), nomatch = 1)],
-             .ele[match(pairs[2, ], names(.ele), nomatch = 1)],
+    distance(.ele[match(pairs[1, , drop=TRUE], names(.ele), nomatch = 1)],
+             .ele[match(pairs[2, , drop=TRUE], names(.ele), nomatch = 1)],
              ignore.strand=TRUE)
   })
   b <- do.call(cbind, b)
-  rownames(b) <- paste(pairs[1, ], pairs[2, ], sep=' ')
+  rownames(b) <- paste(pairs[1, , drop=TRUE], pairs[2, , drop=TRUE], sep=' ')
   b[is.na(b)] <- 0
   ## pairwise difference
   if(missing(ref)){
@@ -335,13 +335,13 @@ pairs_direction <- function(stringList, maskedGeneIds, ref, grs){
   if(missing(ref)){
     comb <- getComb(colnames(b))
     d <- apply(comb, 1, function(.ele){
-      pairDirDiff(b[, .ele[1]], b[, .ele[2]])
+      pairDirDiff(b[, .ele[1], drop=TRUE], b[, .ele[2], drop=TRUE])
     })
     d <- matrix(d, nrow = ncol(b),
                 dimnames = list(colnames(b), colnames(b)))
   }else{
     d <- lapply(colnames(b), function(.ele){
-      pairDirDiff(b[, .ele], b[, ref])
+      pairDirDiff(b[, .ele, drop=TRUE], b[, ref, drop=TRUE])
     })
     d <- unlist(d)
   }

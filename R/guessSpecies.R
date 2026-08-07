@@ -39,9 +39,9 @@ guessSpecies <- function(species,
                   'mart'=useEnsembl(biomart = 'ensembl',
                                     dataset=paste0(species, '_gene_ensembl'),
                                     ...),
-                  'scientific name'=taxonomy[id[1], 'scientific_name'],
-                  'taxid'=taxonomy[id[1], 'tax_id'],
-                  'common name'=taxonomy[id[1], 'common_name']))
+                  'scientific name'=taxonomy[id[1], 'scientific_name', drop=TRUE],
+                  'taxid'=taxonomy[id[1], 'tax_id', drop=TRUE],
+                  'common name'=taxonomy[id[1], 'common_name', drop=TRUE]))
   }
   if(species %in% ucsc_release$UCSC.VERSION){
     id <- which(ucsc_release$UCSC.VERSION==species & 
@@ -52,9 +52,9 @@ guessSpecies <- function(species,
                   'mart'=useEnsembl(biomart = 'ensembl',
                                     dataset=paste0(species, '_gene_ensembl'),
                                     ...),
-                  'scientific name'=ucsc_release[id[1], 'scientific_name'],
-                  'taxid'=ucsc_release[id[1], 'tax_id'],
-                  'common name'=ucsc_release[id[1], 'common_name']))
+                  'scientific name'=ucsc_release[id[1], 'scientific_name', drop=TRUE],
+                  'taxid'=ucsc_release[id[1], 'tax_id', drop=TRUE],
+                  'common name'=ucsc_release[id[1], 'common_name', drop=TRUE]))
   }
   if(species %in% ensembl_release$assembly){
     id <- which(ensembl_release$assembly==species & 
@@ -65,9 +65,9 @@ guessSpecies <- function(species,
                   'mart'=useEnsembl(biomart = 'ensembl',
                                     dataset=paste0(species, '_gene_ensembl'),
                                     ...),
-                  'scientific name'=ensembl_release[id[1], 'scientific_name'],
-                  'taxid'=ensembl_release[id[1], 'tax_id'],
-                  'common name'=ensembl_release[id[1], 'common_name']))
+                  'scientific name'=ensembl_release[id[1], 'scientific_name', drop=TRUE],
+                  'taxid'=ensembl_release[id[1], 'tax_id', drop=TRUE],
+                  'common name'=ensembl_release[id[1], 'common_name', drop=TRUE]))
   }
   dist_scientific_name <- adist(species, taxonomy$scientific_name,
                                 ignore.case = TRUE)[1, ]
@@ -85,20 +85,20 @@ guessSpecies <- function(species,
                   grepl(species, taxonomy$scientific_name))
     id1 <- which(dist_common_name==min_common_name  |
                   grepl(species, taxonomy$common_name))
-    out <- pasteReplaceLast(c(taxonomy[id, 'scientific_name'],
-                              taxonomy[id1, 'common_name']))
+    out <- pasteReplaceLast(c(taxonomy[id, 'scientific_name', drop=TRUE],
+                              taxonomy[id1, 'common_name', drop=TRUE]))
     stop('Can not find exactly match for ', species,
          '. Do you mean ', out, '?\n')
   }else if(min_scientific_name < min_common_name){
     id <- which(dist_scientific_name==min_scientific_name |
                   grepl(species, taxonomy$scientific_name))
-    out <- pasteReplaceLast(taxonomy[id, 'scientific_name'])
+    out <- pasteReplaceLast(taxonomy[id, 'scientific_name', drop=TRUE])
     stop('Can not find exactly match for ', species,
          '. Do you mean ', out, '?\n')
   }else{
     id <- which(dist_common_name==min_common_name  |
                    grepl(species, taxonomy$common_name))
-    out <- pasteReplaceLast(taxonomy[id, 'common_name'])
+    out <- pasteReplaceLast(taxonomy[id, 'common_name', drop=TRUE])
     stop('Can not find exactly match for ', species,
          '. Do you mean ', out, '?\n')
   }
@@ -112,8 +112,8 @@ guessSpecies <- function(species,
                                     dataset=paste0(guess, '_gene_ensembl'),
                                     ...),
                   'scientific name'=sname0,
-                  'taxid'=taxonomy[id[1], 'tax_id'],
-                  'common name'=taxonomy[id[1], 'common_name']))
+                  'taxid'=taxonomy[id[1], 'tax_id', drop=TRUE],
+                  'common name'=taxonomy[id[1], 'common_name', drop=TRUE]))
   }else{
     stop('The dataset is not available for ', sname0)
   }
