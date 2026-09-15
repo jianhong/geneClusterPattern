@@ -1,3 +1,11 @@
+# Changes in version 0.99.2
+
+  o reduce the size of logo.
+  o add Bioconductor installation instructions for the readme.
+  o remove the RUnit from suggestion.
+  o add more unit test
+  o rename rescalRegion to rescaleRegion.
+  
 # Changes in version 0.99.1
 
   o replace the workflows by R-universe testing.
