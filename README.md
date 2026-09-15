@@ -34,8 +34,12 @@ These inputs are used to reconstruct ordered gene neighborhoods and generate com
 ## Installation
 
 ```r
-# install.packages("devtools")
-devtools::install_github("jianhong/geneClusterPattern")
+if (!require("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install('geneClusterPattern')
+# or install from github for the development version
+BiocManager::install('jianhong/geneClusterPattern')
 ```
 
 ---

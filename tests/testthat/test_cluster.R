@@ -72,9 +72,9 @@ test_that('addGeneInfo',{
   expect_true(length(x$feature)==length(x))
 })
 
-test_that('rescalRegion', {
+test_that('rescaleRegion', {
   gr <- fish[targetGeneEnID2]
-  x <- rescalRegion(gr)
+  x <- rescaleRegion(gr)
   expect_all_equal(round(width(x)/max(width(gr)), digits = 3), 1)
 })
 

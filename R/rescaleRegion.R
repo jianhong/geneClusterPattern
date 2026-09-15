@@ -1,11 +1,11 @@
-#' rescale the region width to similar width.
+#' re-scale the region width to similar width.
 #' @noRd
 #' @param gr A GRanges
 #' @return A GRanges with width rescaled.
 #' @importFrom BiocGenerics start end width strand
 #' @importFrom GenomicRanges GRangesList
 #' @importFrom IRanges ranges<-
-rescalRegion <- function(gr){
+rescaleRegion <- function(gr){
   if(is.list(gr)) gr <- unlist(GRangesList(gr))
   width <- width(gr)
   width[width<1] <- 1

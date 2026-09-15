@@ -44,7 +44,7 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
   ## extract the plot regions for each species
   region <- unlist(GRangesList(lapply(geneModels, function(.ele) .ele$region)))
   ## make the plot region size comparable
-  region <- rescalRegion(region)
+  region <- rescaleRegion(region)
   ## extract the genes in the rescaled regions
   geneModels <- mapply(function(.ele, .region){
     w2 <- subsetByOverlaps(.ele, .region)
@@ -73,7 +73,7 @@ plotGeneClusterPatterns <- function(genesList, ids, additionalID, max_gap=1e7,
     }
   })
   ## make the plot region size comparable
-  patternRegions <- rescalRegion(patternRegions)
+  patternRegions <- rescaleRegion(patternRegions)
   ## align center
   if(alignType == 'local'){
     geneClusterPatterns <- 
