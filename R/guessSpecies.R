@@ -103,7 +103,7 @@ guessSpecies <- function(species,
          '. Do you mean ', out, '?\n')
   }
   sname0 <- taxonomy[id[1], 'scientific_name']
-  sname <- strsplit(sname0, ' ')[[1]]
+  sname <- strsplit(sname0, ' ', fixed=TRUE)[[1]]
   guess <- tolower(paste0(substr(sname[1], 1, 1), sname[2]))
   if(paste0(guess, '_gene_ensembl') %in% ensembl_dataset$dataset){
     return(switch(output,

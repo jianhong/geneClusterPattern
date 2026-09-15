@@ -29,7 +29,7 @@ homologsFromEnsemblIDs <- function(species, mart, ensembl_gene_ids, ...){
               filters = 'ensembl_gene_id',
               values = ensembl_gene_ids,
               mart = mart)
-  bm <- bm[!is.na(bm[, 2, drop=TRUE]) & bm[, 2, drop=TRUE]!='', , drop=FALSE]
+  bm <- bm[!is.na(bm[, 2, drop=TRUE]) & nzchar(bm[, 2, drop=TRUE]), , drop=FALSE]
   mart2 <- useEnsembl('ensembl', paste0(species, '_gene_ensembl'), ...)
   gr <- grangesFromEnsemblIDs(mart2, ensembl_gene_ids=bm[, 2, drop=TRUE])
   if(length(gr)){

@@ -14,8 +14,8 @@ orthologPairsFromOrthoFinder <- function(path){
   x <- split(x, x$Species)
   x <- lapply(x, function(.ele){
     cn <- c(colnames(.ele)[3], .ele[1, 2])
-    a <- strsplit(.ele[, 3, drop=TRUE], ', ')
-    b <- strsplit(.ele[, 4, drop=TRUE], ', ')
+    a <- strsplit(.ele[, 3, drop=TRUE], ', ', fixed=TRUE)
+    b <- strsplit(.ele[, 4, drop=TRUE], ', ', fixed=TRUE)
     .ele <- mapply(a, b, FUN=function(.a, .b){
       cbind(x=rep(.a, each=length(.b)), y=rep(.b, length(.a)))
     })
@@ -43,7 +43,7 @@ getHomologForOrthoFinder <- function(orthologs, mart){
               ncol(orthologs)==2)
   orthologs <- trimENSname(orthologs)
   stopifnot('The gene id is not ensembl ids'=
-              all(grepl('ENS', orthologs[, 2, drop=TRUE])))
+              all(grepl('ENS', orthologs[, 2, drop=TRUE], fixed=TRUE)))
   if(is(mart, 'Mart')){
     gr <- grangesFromEnsemblIDs(mart = mart,
                                 ensembl_gene_ids = orthologs[, 2, drop=TRUE])
