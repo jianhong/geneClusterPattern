@@ -79,7 +79,7 @@ is as follows:
     contribution](https://contributions.bioconductor.org/)
 4.  Use `devtools::build` and `devtools::check` to check the package
     work properly.
-5.  Submit a Pull Request against the `main` or current
+5.  Submit a Pull Request against the `devel` or current
     `RELEASE_VERSION` branch and wait for the code to be reviewed and
     merged.
 
