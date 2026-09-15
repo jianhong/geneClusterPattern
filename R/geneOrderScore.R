@@ -247,7 +247,7 @@ non_random_score <- function(stringList, maskedGeneIds, ref, grs){
       paste(sort(unique(.e[.e!='-'])), collapse = '')
     })
     s <- unlist(unique(s))
-    s[s!='']
+    s[nzchar(s)]
   })
   if(missing(ref)){
     comb <- getComb(names(b))
