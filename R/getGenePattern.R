@@ -3,7 +3,7 @@
 #' @param reg The regions to plot
 #' @param k The maximal non-essential genes to be plotted between two
 #'  essential genes.
-#' @return gene patter in GRanges object
+#' @return gene pattern in GRanges object
 #' @importFrom IRanges gaps promoters ranges<- disjoin reduce ranges
 #' @importFrom GenomicRanges GRangesList
 #' @importFrom BiocGenerics start end width strand strand<-
@@ -28,7 +28,7 @@ getGeneClusterPattern <- function(gr, reg, k=5){
     gr <- gr[keep]
     ## rescale the genes and the gaps
     grnostrand <- gr
-    strand(grnostrand) <- '*'
+    strand(grnostrand) <- rep('*', length(gr))
     grgap <- gaps(grnostrand, start = start(reg), end = end(reg))
     grgap <- grgap[as.character(strand(grgap))=='*' &
                      as.character(seqnames(grgap))==

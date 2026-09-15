@@ -35,6 +35,6 @@ Imports: BiocGenerics,
     stats,
     trackViewer,
     utils
-Suggests: RUnit, org.Dr.eg.db,
+Suggests: org.Dr.eg.db,
         BiocStyle, knitr, rmarkdown,
         testthat, S4Vectors

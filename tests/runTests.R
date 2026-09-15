@@ -1,4 +1,5 @@
 require("geneClusterPattern") || stop("unable to load Package:geneClusterPattern")
 require('S4Vectors') || stop('unable to load S4Vectors')
 require("testthat") || stop("unable to load testthat")
+require('pwalign') || stop('unable to load pwalign')
 test_check("geneClusterPattern")

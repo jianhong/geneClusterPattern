@@ -72,6 +72,22 @@ test_that('addGeneInfo',{
   expect_true(length(x$feature)==length(x))
 })
 
+test_that('getGeneClusterPattern', {
+  gr <- fish[targetGeneEnID2]
+  id <- seq.int(7)
+  colors <- setNames(id, targetGeneEnID2[id])
+  gr <- addGeneInfo(gr, colors = colors)
+  reg <- GRanges('24:3347510-5910811')
+  gr1 <- getGeneClusterPattern(gr, reg=reg, k=3)
+  gr1 <- gr1[names(gr)]
+  for(i in names(mcols(gr))){
+    if(i!='feature'){
+      expect_equal(mcols(gr)[[i]], mcols(gr1)[[i]])
+    }
+  }
+  expect_all_false(start(gr1)==start(gr))
+})
+
 test_that('rescaleRegion', {
   gr <- fish[targetGeneEnID2]
   x <- rescaleRegion(gr)
@@ -145,4 +161,142 @@ test_that('getHomologListForOrthoFinder', {
     expect_all_true(grepl('^ENSDARG', names(.ele)))
     expect_all_true(grepl('^ENS', .ele$homolog_ensembl_gene_ids))
   })
+})
+
+
+test_that('alignCenterId', {
+  geneClusterPatterns <- list(
+    species1 = GRanges('chr1', IRanges(start = c(10, 30, 50),
+                                       end = c(20, 40, 60),
+                                       names = c("geneA", "geneB", "geneC"))),
+    species2 = GRanges('XII', IRanges(start = c(5, 25, 70),
+                                      end = c(20, 35, 80),
+                                      names = c("geneA", "geneC", "geneB")))
+  )
+  patternRegions <- lapply(geneClusterPatterns, function(gr){
+    strand(gr) <- '*'
+    reg <- range(gr)
+    ranges(reg) <- IRanges(start = 1, end = end(reg)+3)
+    return(reg)
+  })
+  ## make the plot region size comparable
+  patternRegions <- rescaleRegion(patternRegions)
+  ## by local
+  res <- alignCenterId(geneClusterPatterns, patternRegions, id0 = "geneA")
+  ## test the output 
+  expect_type(res, "list")
+  expect_named(res, c("patterns", "regions"))
+  # geneA center in species1
+  ctr <- function(x) start(x) + width(x)/2
+  # geneA should now sit exactly at the center of its (widened) region
+  for (i in seq_along(res$patterns)) {
+      pattern <- res$patterns[[i]]
+      center_gene   <- ctr(pattern['geneA'])
+      center_region <- width(res$regions)[i] / 2
+      expect_equal(center_gene, center_region, tolerance = 0.5)
+      # relative position of geneB should not change
+      expect_equal(start(pattern['geneB']),
+                   end(pattern['geneA'])+
+                     distance(geneClusterPatterns[[i]]['geneB'],
+                              geneClusterPatterns[[i]]['geneA'])+1)
+  }
+  ## global
+  res <- alignCenterId(geneClusterPatterns, patternRegions)
+  expect_type(res, "list")
+  expect_named(res, c("patterns", "regions"))
+  expect_equal(ctr(unlist(range(GRangesList(res$patterns)))),
+               ctr(res$regions),
+               tolerance = 0.5)
+  for (i in seq_along(res$patterns)) {
+    pattern <- res$patterns[[i]]
+    # relative position of geneB should not change
+    expect_equal(start(pattern['geneB']),
+                 end(pattern['geneA'])+
+                   distance(geneClusterPatterns[[i]]['geneB'],
+                            geneClusterPatterns[[i]]['geneA'])+1)
+  }
+})
+
+test_that('geneOrderScore', {
+  genesList <- list(
+    species1 = GRanges('chr1', IRanges(start = c(10, 30, 50),
+                                       end = c(20, 40, 60),
+                                       names = c("geneA", "geneB", "geneC")),
+                       strand = c('+', '+', '-'),
+                       gene_name=c("geneA", "geneB", "geneC")),
+    species2 = GRanges('XII', IRanges(start = c(5, 25, 70),
+                                      end = c(20, 35, 80),
+                                      names = c("geneA", "geneC", "geneB")),
+                       strand = c('+', '-', '+'),
+                       gene_name=c("geneA", "geneC", "geneB"))
+  )
+  ids <- c('geneA', 'geneB', 'geneC')
+  gos <- geneOrderScore(genesList, ids, method='edit distance')
+  expect_equal(gos, 1/(adist('ABC', 'ACB')[1]+1))
+  gos <- geneOrderScore(genesList, ids, method='edit distance', 
+                        output = "value matrix")
+  expect_equal(gos, matrix(c(1, 1/3, 1/3, 1), nrow = 2,
+                           dimnames = list(names(genesList),
+                                           names(genesList))))
+
+  gos <- geneOrderScore(genesList, ids, method='global alignment score')
+  expect_equal(gos, pwalign::score(pairwiseAlignment('ABC', 'ACB')))
+  
+  gos <- geneOrderScore(genesList, ids, method='spearman correlation')
+  expect_equal(gos, cor(c(1, 2, 3), c(1, 3, 2), method = 'spearman'))
+  
+  gos <- geneOrderScore(genesList, ids, method='kendall correlation')
+  expect_equal(gos, cor(c(1, 2, 3), c(1, 3, 2), method = 'kendall'))
+  
+  gos <- geneOrderScore(genesList, ids, method='non-random score')
+  expect_equal(gos, jaccard(
+    c('A', 'B', 'C', 'AB', 'BC', 'ABC'),
+    c('A', 'C', 'B', 'AC', 'BC', 'ABC')
+  ))
+  
+  gos <- geneOrderScore(genesList, ids, method='pairs direction')
+  expect_equal(gos, 1) ## all strand pairs are identical
+  
+  strand(genesList$species1)[3] <- '+'
+  gos <- geneOrderScore(genesList, ids, method='pairs direction')
+  expect_equal(gos, 1/3) ## only AB is same stranded, AC and BC not same
+})
+
+test_that('pasteReplaceLast', {
+  expect_equal(pasteReplaceLast(character(0)), "")
+  expect_equal(pasteReplaceLast("apple"), "apple")
+  expect_equal(pasteReplaceLast(c("apple", "banana")), "apple, or banana")
+  expect_equal(
+    pasteReplaceLast(c("apple", "banana", "cherry")),
+    "apple, banana, or cherry"
+  )
+  expect_equal(
+    pasteReplaceLast(c("apple", "banana", "cherry"), collapse = "; "),
+    "apple; banana; cherry"
+  )
+  expect_equal(
+    pasteReplaceLast(c("apple", "banana", "cherry"), last = ", and"),
+    "apple, banana, and cherry"
+  )
+})
+
+test_that('convertNamesOfHomologIDs', {
+  homologs <- list(
+    species1 = GRanges('chr1', IRanges(start = c(10, 30, 50),
+                                       end = c(20, 40, 60),
+                                       names = c("geneA", "geneB", "geneC")),
+                       strand = c('+', '+', '-'),
+                       homolog_ensembl_gene_ids=c("A", "B", "C")),
+    species2 = GRanges('XII', IRanges(start = c(5, 25, 70),
+                                      end = c(20, 35, 80),
+                                      names = c("geneA", "geneC", "geneB")),
+                       strand = c('+', '-', '+'),
+                       homolog_ensembl_gene_ids=c("A", "C", "B")),
+    species3 = GRanges()
+  )
+  hl <- convertNamesOfHomologIDs(homologs)
+  for(i in seq_along(homologs)){
+    expect_equal(names(hl[[i]]), homologs[[i]]$homolog_ensembl_gene_ids)
+    expect_equal(hl[[i]]$homolog_ensembl_gene_ids, names(homologs[[i]]))
+  }
 })
