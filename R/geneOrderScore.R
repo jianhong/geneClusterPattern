@@ -78,7 +78,7 @@ geneOrderScore <- function(genesList, ids, ref, k=length(ids), max_gap=1e7,
                    seq(91, 96),
                    seq(123, 126))
     geneIdMap <- intToUtf8(geneIdMap)
-    geneIdMap <- strsplit(geneIdMap, '')[[1]]
+    geneIdMap <- strsplit(geneIdMap, '', fixed=TRUE)[[1]]
   }
   
   
@@ -232,7 +232,7 @@ non_random_score <- function(stringList, maskedGeneIds, ref, grs){
   b <- lapply(maskedGeneIds, function(.ele){
     .ele <- gsub('--+', '--', .ele)
     n <- seq.int(nchar(.ele))
-    s <- strsplit(.ele, '')[[1]]
+    s <- strsplit(.ele, '', fixed=TRUE)[[1]]
     if(length(n)>1){
       s <- c(s,
              substring(.ele, first =n[-length(n)], last=n[-1]))
@@ -242,7 +242,7 @@ non_random_score <- function(stringList, maskedGeneIds, ref, grs){
                           first =n[-c(length(n)-1, length(n))],
                           last=n[-c(1, 2)]))
     }
-    s <- strsplit(s, '')
+    s <- strsplit(s, '', fixed=TRUE)
     s <- lapply(s, function(.e){
       paste(sort(unique(.e[.e!='-'])), collapse = '')
     })
